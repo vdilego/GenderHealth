@@ -39,7 +39,7 @@ library(forcats)
 
 
 # Loading useful functions into environment
-source(here("Gender_Inequality","Gender_health","Rcodes","0_Functions.R"))
+source(here("Rcodes","0_Functions.R"))
 options(scipen=999)
 
 # creating directory folders where outputs are saved
