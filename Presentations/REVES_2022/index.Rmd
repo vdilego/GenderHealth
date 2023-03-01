@@ -1,0 +1,93 @@
+---
+title: "Gender Disparities in Healthy Life Expectancy at Older Ages: A Cross-National Comparison"
+author: "Vanessa di Lego, Marília R. Nepomuceno, Cássio M. Turra"
+subtitle: "33 REVES Meeting <br> Halifax, September 21, 2022"
+institute: "Vienna Institute of Demography (OeAW), Wittgenstein Centre (IIASA, OeAW, University of Vienna), Vienna, Austria, Max Planck Institute for Demographic Research, Rostock, Germany, Cedeplar, Universidade Federal de Minas Gerais, Belo Horizonte, Brazil"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["wic.css", "wic-fonts.css"]
+    self_contained: false
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+exclude:true 
+<!--- Slide hidden from presentation --->
+
+<!--- Code chunk for references setup --->
+```{r load_refs, include=FALSE, cache=FALSE}
+# Required packages (xaringan,shiny)
+  #install.packages(c("xaringan","shiny","RefManageR","bibtex"))
+# Load required packages for references
+library(RefManageR) #also package "bibtex" required
+BibOptions(check.entries = FALSE,
+           bib.style = "numeric",
+           cite.style = "authoryear",
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+litera <- ReadBib("./litera.bib", check = FALSE) #change to your own .bib file
+```
+
+---
+
+# Example bullet list
+- Text Text Text
+- Text Text
+- Text
+- ...
+---
+
+# Example numbered list
+1. Text Text Text
+2. Text Text
+3. Text
+4. ...
+
+---
+
+```{r table2, fig.align = 'right', out.width = "50%", echo=F}
+
+knitr::include_graphics(here::here("Gender_health","Presentations","REVES_2022", "Table2.png"))
+
+```
+
+---
+
+# Example code
+
+```{r}
+# Some R code
+x <- rpois(5,10)
+y <- matrix(diag(x),5,5)
+print(y)
+```
+
+
+---
+
+# Example blockquote
+
+.blockquote[Text]
+
+---
+
+class: title-slide-final
+
+# Title of closing slide
+
+- Text Text Text
+- Text Text
+- Text
+- ...
+
+.footnote[
+wittgensteincentre.org <br>
+dataexplorer.wittgensteincentre.org
+]
+
+
