@@ -37,17 +37,17 @@ library(forcats)
 
 
 # Loading useful functions into environment
-source(here("Gender_health","Rcodes","0_Functions.R"))
+source(here("Rcodes","0_Functions.R"))
 options(scipen=999)
 
 # creating directory folders where outputs are saved
-figs.folder <- here("Gender_health","Rcodes","Manuscript","Figures")
-figs.app.folder <- here("Gender_health","Rcodes","Appendix","Figures")
+figs.folder <- here("Manuscript","Figures")
+figs.app.folder <- here("Appendix","Figures")
 
 # First setting the folders
 
-cron.folder <- here("Gender_health","Data","All_Prevalence") 
-mort.folder <- here("Gender_health","Data","Life_Tables","LT_UN")
+cron.folder <- here("Data","All_Prevalence") 
+mort.folder <- here("Data","Life_Tables","LT_UN")
 
 
 
@@ -91,17 +91,17 @@ for (i in 1:length(cntr)) {
       filter(country == cntr[i],
              sex==gender[2])
     
-    #disability rates
-    dis_cntr_f <- dis %>% 
+    #Chronic rates
+    cron_cntr_f <- cron %>% 
       filter(country == cntr[i],
              sex==gender[1])
-    dis_cntr_m <- dis %>% 
+    cron_cntr_m <- cron %>% 
       filter(country == cntr[i],
              sex==gender[2])
   
-    # allocating mort and dis in the same vec
-    mxwx_f <- c(mort_cntr_f$nMx,dis_cntr_f$unhealthy)
-    mxwx_m <- c(mort_cntr_m$nMx,dis_cntr_m$unhealthy)
+    # allocating mort and cron in the same vec
+    mxwx_f <- c(mort_cntr_f$nMx,cron_cntr_f$unhealthy)
+    mxwx_m <- c(mort_cntr_m$nMx,cron_cntr_m$unhealthy)
     
     # applying Sullivan function
     HL_f = Sullivan.fun(rates=mxwx_f)
@@ -165,7 +165,7 @@ en_cron_f<-fread(here(cron.folder,"all_prev_cron.csv")) %>%
   rename(sex=gender) %>% 
   filter(country%in%"England" & age>=60 & sex%in%"woman" )
 
-en_cron_m<-fread(here(cron.folder,"all_prev_adl.csv")) %>% 
+en_cron_m<-fread(here(cron.folder,"all_prev_cron.csv")) %>% 
   rename(sex=gender) %>% 
   filter(country%in%"England" & age>=60 & sex%in%"man" )
 
@@ -223,6 +223,37 @@ Age=seq(start.age,open.age,5)
 
 outAgegap.long <- outAgegap%>%  
   pivot_longer(!c(Age,Country),names_to="type", values_to = "Contribution" ) 
+
+# I think we only need one and arrange everthing here:
+
+
+plot_all_cron<-ggplot(data=outAgegap.long , aes(x=as.factor(Age), y=Contribution, 
+                                           fill=factor(type, levels=c("Mortality","Chronic"))))+
+  #  ggtitle(bquote(~'Germany (SHARE)' ))+
+  xlab("Age") +ylab(" ")+
+  theme (plot.title = element_text(size = 10))+
+  geom_bar(stat = "identity", position = "stack")+ 
+  scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
+  ylim(-1.25, 1)+
+  geom_hline(yintercept=0, linetype="dashed", 
+             color = "black", size=0.5)+
+  labs(fill = "Component")+
+  theme_minimal(base_size = 16) +
+  facet_wrap(.~Country)+
+  theme(legend.text=element_text(size=12),
+        legend.title=element_text(size=12),
+        axis.title =  element_text(size=12),title =  element_text(size=12),
+        legend.position = "right", 
+        legend.background = element_rect(color = NA))
+
+# fig.folder
+
+pdf(here(figs.folder,"Decomp_all_cron.pdf"), width = 15, height=17)
+plot_all_cron
+dev.off()
+
+# plots for individual countries
+
 
 # USA
 HE_cont.US <- outAgegap.long %>%  
