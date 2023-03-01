@@ -43,14 +43,16 @@ source(here("Rcodes","0_Functions.R"))
 options(scipen=999)
 
 # creating directory folders where outputs are saved
-figs.folder <- here("Gender_Inequality","Gender_health","Rcodes","Manuscript","Figures")
-figs.app.folder <- here("Gender_Inequality","Gender_health","Rcodes","Appendix","Figures")
+figs.folder <- here("Manuscript","Figures")
+figs.app.folder <- here("Appendix","Figures")
+
+dir.create(figs.folder, showWarnings = FALSE, recursive = TRUE)
+dir.create(figs.app.folder, showWarnings = FALSE, recursive = TRUE)
 
 # First setting the folders
 
-dis.folder <- here("Gender_Inequality","Gender_health","Data","All_Prevalence") 
-
-mort.folder <- here("Gender_Inequality","Gender_health","Data","Life_Tables","LT_UN")
+dis.folder <- here("Data","All_Prevalence") 
+mort.folder <- here("Data","Life_Tables","LT_UN")
 
 # reading disability data for all countries at the same time
 dis<-fread(here(dis.folder,"all_prev_adl.csv")) %>%  
@@ -231,20 +233,27 @@ outAgegap.long <- outAgegap%>%
 plot_all<-ggplot(data=outAgegap.long , aes(x=as.factor(Age), y=Contribution, 
                                       fill=factor(type, levels=c("Mortality","Disability"))))+
 #  ggtitle(bquote(~'Germany (SHARE)' ))+
-  xlab(" ") +ylab(" ")+
+  xlab("Age") +ylab(" ")+
   theme (plot.title = element_text(size = 10))+
   geom_bar(stat = "identity", position = "stack")+ 
   scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
-  ylim(-1.1, 1.1)+
+  ylim(-1.7, 1.7)+
   geom_hline(yintercept=0, linetype="dashed", 
              color = "black", size=0.5)+
   labs(fill = "Component")+
-  theme_minimal() +
+  theme_minimal(base_size = 16) +
   facet_wrap(.~Country)+
-  theme(legend.text=element_text(size=14))+
-  theme(axis.title =  element_text(size=14),title =  element_text(size=14) )
+  theme(legend.text=element_text(size=12),
+        legend.title=element_text(size=12),
+        axis.title =  element_text(size=12),title =  element_text(size=12),
+        legend.position = "right", 
+        legend.background = element_rect(color = NA))
 
+# fig.folder
 
+pdf(here(figs.folder,"Decomp_all.pdf"), width = 15, height=17)
+plot_all
+dev.off()
 
 # plots for individual countries
 
