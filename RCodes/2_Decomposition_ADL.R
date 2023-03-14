@@ -46,6 +46,7 @@ options(scipen=999)
 figs.folder <- here("Manuscript","Figures")
 figs.app.folder <- here("Appendix","Figures")
 
+
 dir.create(figs.folder, showWarnings = FALSE, recursive = TRUE)
 dir.create(figs.app.folder, showWarnings = FALSE, recursive = TRUE)
 
@@ -57,8 +58,7 @@ mort.folder <- here("Data","Life_Tables","LT_UN")
 # reading disability data for all countries at the same time
 dis<-fread(here(dis.folder,"all_prev_adl.csv")) %>%  
   rename(sex=gender) %>% 
-  filter(age>=60 ) %>% 
-  mutate(Age = fct_recode(age, "woman" = "Female","man" = "Male"))
+  filter(age>=60 ) 
 
 # creating a vector with countries names (No England)
 dis_noEngl <- dis %>% 
