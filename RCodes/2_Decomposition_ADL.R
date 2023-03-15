@@ -377,12 +377,17 @@ outAgegap<-rbind(out_Age_gap,Eng.Age)
 Age=seq(start.age,open.age,5)
 
 outAgegap.long <- outAgegap%>%  
+  select(1:4) %>% 
   pivot_longer(!c(Age,Country),names_to="type", values_to = "Contribution" ) 
+
+outgap.long <- outgap %>%  
+  select(c(1,6:7)) %>% 
+  pivot_longer(!c(Country),names_to="type", values_to = "Contribution" ) 
 
 # I think we only need one and arrange everthing here:
 
 
-plot_all<- ggplot(data=outAgegap.long , aes(x=factor(Age), y=Contribution, 
+plot_all_age<- ggplot(data=outAgegap.long , aes(x=factor(Age), y=Contribution, 
                                    fill=factor(type, levels=c("Mortality","Disability"))))+
   #  ggtitle(bquote(~'Germany (SHARE)' ))+
   xlab("Age") +ylab(" ")+
@@ -403,10 +408,9 @@ plot_all<- ggplot(data=outAgegap.long , aes(x=factor(Age), y=Contribution,
         axis.text.x = element_text( vjust = 0.3, hjust = 1))#+
 
 
-
 # fig.folder
  # plot_all_dis<- ggplot(data=outAgegap.long , aes(x=Country, y=Contribution, 
-                                      fill=factor(type, levels=c("Mortality","Disability"))))+
+#                                      fill=factor(type, levels=c("Mortality","Disability"))))+
 #  ggtitle(bquote(~'Germany (SHARE)' ))+
 #  xlab("Age") +ylab(" ")+
 #  theme (plot.title = element_text(size = 10))+
@@ -429,11 +433,11 @@ plot_all<- ggplot(data=outAgegap.long , aes(x=factor(Age), y=Contribution,
 # fig.folder
 
 pdf(here(figs.folder,"Decomp_all.pdf"), width = 10, height=20)
-plot_all
+plot_all_age
 dev.off()
 
 png(here(figs.folder,"Decomp_all.png"), width = 2800, height=4000, res=350)
-plot_all
+plot_all_age
 dev.off()
 
 
@@ -445,7 +449,34 @@ dev.off()
 #plot_all_dis
 #dev.off()
 
+
+# summing after age 60
+plot_all_sum60<- ggplot(data=outgap.long , aes(x=Country, y=Contribution, 
+                                                fill=factor(type, levels=c("Mortality","Disability"))))+
+  #  ggtitle(bquote(~'Germany (SHARE)' ))+
+  xlab("Age") +ylab(" ")+
+  theme (plot.title = element_text(size = 10))+
+  geom_bar(stat = "identity", position = "stack")+ 
+  scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
+ # ylim(-1.2, 1.7)+
+  geom_hline(yintercept=0, linetype="dashed", 
+             color = "black", size=0.5)+
+  labs(fill = "Component")+
+  theme_minimal(base_size = 12) +
+ # facet_wrap(.~Country, ncol = 4)+
+  theme(legend.text=element_text(size=9),
+        legend.title=element_text(size=10),
+        axis.title =  element_text(size=12),title =  element_text(size=12),
+        legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+  coord_flip()
+
+
+plot_all_sum60
+
 # with all countries pooled
+
 
  
 ggplot(data=outAgegap , aes(x=Disability, y=Mortality,color=Age, fill=Age))+
