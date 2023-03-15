@@ -214,6 +214,7 @@ for (i in 1:length(cntr)) {
                                 Disability.l=dis.contr.l,
                                 Disability.u=dis.contr.u)
 }
+
 # end loop country
 
 out_gap <- do.call(rbind, out_gap) 
@@ -251,17 +252,46 @@ en_dis_m<-fread(here(dis.folder,"all_prev_adl.csv")) %>%
 mxwx.f.en <- c(en_mort_f$nMx,en_dis_f$unhealthy)
 mxwx.m.en <- c(en_mort_m$nMx,en_dis_m$unhealthy)
 
+# CI intevals
+mxwx.f.en.l <- c(en_mort_f$nMx,en_dis_f$CI_low_unhealthy)
+mxwx.f.en.u <- c(en_mort_f$nMx,en_dis_f$CI_up_unhealthy)
+
+mxwx.m.en.l <- c(en_mort_m$nMx,en_dis_m$CI_low_unhealthy)
+mxwx.m.en.u <- c(en_mort_m$nMx,en_dis_m$CI_up_unhealthy)
+
 # men
 HL.m.en = Sullivan.fun(rates=mxwx.m.en)
 HL.m.en
+
+# CI interval
+HL.m.en.l = Sullivan.fun(rates=mxwx.m.en.l)
+HL.m.en.l
+
+HL.m.en.u = Sullivan.fun(rates=mxwx.m.en.u)
+HL.m.en.u
+
 
 # woman
 HL.f.en = Sullivan.fun(rates=mxwx.f.en)
 HL.f.en
 
+# CI interval
+
+HL.f.en.l = Sullivan.fun(rates=mxwx.f.en.l)
+HL.f.en.l
+
+HL.f.en.u = Sullivan.fun(rates=mxwx.f.en.u)
+HL.f.en.u
+
 # The gender gap in DFLE was:
 gap.en = HL.f.en - HL.m.en
 gap.en
+
+gap.en.l = HL.f.en.l - HL.m.en.l
+gap.en.l
+
+gap.en.u = HL.f.en.u - HL.m.en.u
+gap.en.u
 
 # the gender gap in le at age 60 is
 
@@ -279,17 +309,65 @@ mort.contr.en<- HE_Decomp_Cont.en [1:5]
 dis.contr.en<- HE_Decomp_Cont.en [6:10]
 
 
-Eng <- data.frame(Country="England", GAP_DFLE=gap.en, GAP_LE=gapLE,
-                  Mortality=sum.mort.contr.en,Disability=sum.dis.contr.en )
+# CI interval
+# low
+HE_Decomp_Cont.en.l <- horiuchi(func=Sullivan.fun,
+                                pars1 = mxwx.m.en.l, 
+                                pars2 = mxwx.f.en.l,
+                                N=20)
+sum.mort.contr.en.l<- sum(HE_Decomp_Cont.en.l [1:5])
+sum.dis.contr.en.l<- sum(HE_Decomp_Cont.en.l [6:10])
 
-Eng.Age <- data.frame(Age=c(60,65,70,75,80),Country="England",
-                      Mortality=mort.contr.en, Disability=dis.contr.en)
+mort.contr.en.l<- HE_Decomp_Cont.en.l [1:5]
+dis.contr.en.l<- HE_Decomp_Cont.en.l [6:10]
+
+# up
+
+HE_Decomp_Cont.en.u <- horiuchi(func=Sullivan.fun,
+                                pars1 = mxwx.m.en.u, 
+                                pars2 = mxwx.f.en.u,
+                                N=20)
+sum.mort.contr.en.u<- sum(HE_Decomp_Cont.en.u [1:5])
+sum.dis.contr.en.u<- sum(HE_Decomp_Cont.en.u [6:10])
+
+mort.contr.en.u<- HE_Decomp_Cont.en.u [1:5]
+dis.contr.en.u<- HE_Decomp_Cont.en.u [6:10]
+
+
+
+Eng <- data.frame(Country="England", 
+                  GAP_DFLE=gap.en,
+                  GAP_DFLE.l=gap.en.l,
+                  GAP_DFLE.u=gap.en.u,
+                  GAP_LE=gapLE,
+                  Mortality=sum.mort.contr.en,
+                  Disability=sum.dis.contr.en,
+                  
+                  Mortality.l=sum.mort.contr.en.l,
+                  Mortality.u=sum.mort.contr.en.u,
+                  
+                  Disability.l=sum.dis.contr.en.l,
+                  Disability.u=sum.dis.contr.en.u
+                  
+)
+
+Eng.Age <- data.frame(Age=c(60,65,70,75,80),
+                      Country="England",
+                      Mortality=mort.contr.en, 
+                      Disability=dis.contr.en,
+                      
+                      Mortality.l=mort.contr.en.l,
+                      Mortality.u=mort.contr.en.u, 
+                      
+                      Disability.l=dis.contr.en.l,
+                      Disability.u=dis.contr.en.u)
 
 
 # Adding English results in previous outputs
 
 outgap<-rbind(out_gap,Eng)
 outAgegap<-rbind(out_Age_gap,Eng.Age)
+
 
 
 # ---------------------------------------------------------------------------------------------------------#
