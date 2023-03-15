@@ -77,7 +77,7 @@ mort<-fread(here(mort.folder,"lt_un_abridged.csv")) %>%
   filter(country %in% cntr)
 
 
-# loop for each country and gender
+# loop for each country and gender and CI intervals
 
 #outputs lists
 out_gap=NULL
@@ -86,65 +86,139 @@ out_Age_gap=NULL
 # loop for each country 
 for (i in 1:length(cntr)) {
   
-    #mortality rates
-    mort_cntr_f <- mort %>% 
+  #mortality rates
+  mort_cntr_f <- mort %>% 
     filter(country == cntr[i],
            sex==gender[1])
-    mort_cntr_m <- mort %>% 
-      filter(country == cntr[i],
-             sex==gender[2])
-    
-    #disability rates
-    dis_cntr_f <- dis %>% 
-      filter(country == cntr[i],
-             sex==gender[1])
-    dis_cntr_m <- dis %>% 
-      filter(country == cntr[i],
-             sex==gender[2])
+  mort_cntr_m <- mort %>% 
+    filter(country == cntr[i],
+           sex==gender[2])
   
-    # allocating mort and dis in the same vec
-    mxwx_f <- c(mort_cntr_f$nMx,dis_cntr_f$unhealthy)
-    mxwx_m <- c(mort_cntr_m$nMx,dis_cntr_m$unhealthy)
-    
-    # applying Sullivan function
-    HL_f = Sullivan.fun(rates=mxwx_f)
-    HL_f
-    HL_m = Sullivan.fun(rates=mxwx_m)
-    HL_m
-    
-    # The gender gap at age 60 in DFLE was:
-    gap_DFLE = HL_f - HL_m
-    gap_DFLE
-    
-    # The gender gap at age 60 in LE was:
-    gap_LE = mort_cntr_f$ex[1] - mort_cntr_m$ex[1]
-    gap_LE
-    
-    # Decomposing the gap in DFLE
-    HE_Decomp_Cont <- horiuchi(func=Sullivan.fun,
-                                  pars1 = mxwx_m, 
-                                  pars2 = mxwx_f,
-                                  N=20)
-    mort.contr<-HE_Decomp_Cont [1:5]
-    dis.contr<-HE_Decomp_Cont [6:10]
-    
-    sum.mort.contr<-sum(HE_Decomp_Cont [1:5])
-    sum.dis.contr<-sum(HE_Decomp_Cont [6:10])
-    
-    #Outputs
-    out_gap[[i]] <- data.frame(Country=cntr[i],
-                           GAP_DFLE=gap_DFLE,GAP_LE=gap_LE,
-                           Mortality=sum.mort.contr,
-                           Disability=sum.dis.contr)
-    
-    out_Age_gap[[i]]<- data.frame(Age=c(60,65,70,75,80),
-                                       Country=cntr[i],
-                                       Mortality=mort.contr,
-                                       Disability=dis.contr)
-}# end loop country
+  #disability rates
+  dis_cntr_f <- dis %>% 
+    filter(country == cntr[i],
+           sex==gender[1])
+  dis_cntr_m <- dis %>% 
+    filter(country == cntr[i],
+           sex==gender[2])
+  
+  # allocating mort and dis in the same vec
+  mxwx_f <- c(mort_cntr_f$nMx,dis_cntr_f$unhealthy)
+  mxwx_m <- c(mort_cntr_m$nMx,dis_cntr_m$unhealthy)
+  
+  # allocating mort and dis in low and upper bound vec
+  # women
+  mxwx_f.l <- c(mort_cntr_f$nMx,dis_cntr_f$CI_low_unhealthy)
+  mxwx_f.u <- c(mort_cntr_f$nMx,dis_cntr_f$CI_up_unhealthy)
+  
+  # men
+  mxwx_m.l <- c(mort_cntr_m$nMx,dis_cntr_m$CI_low_unhealthy)
+  mxwx_m.u <- c(mort_cntr_m$nMx,dis_cntr_m$CI_up_unhealthy)
+  
+  # applying Sullivan function
+  HL_f = Sullivan.fun(rates=mxwx_f)
+  HL_f
+  HL_m = Sullivan.fun(rates=mxwx_m)
+  HL_m
+  
+  # applying Sullivan function for lower and upper bounds
+  
+  HL_f.l = Sullivan.fun(rates=mxwx_f.l)
+  HL_f.l
+  
+  HL_f.u = Sullivan.fun(rates=mxwx_f.u)
+  HL_f.u
+  
+  HL_m.l = Sullivan.fun(rates=mxwx_m.l)
+  HL_m.l
+  
+  HL_m.u = Sullivan.fun(rates=mxwx_m.u)
+  HL_m.u
+  
+  # The gender gap at age 60 in DFLE was:
+  gap_DFLE = HL_f - HL_m
+  gap_DFLE
+  
+  # gender gap with CI intervals
+  gap_DFLE.l = HL_f.l - HL_m.l
+  gap_DFLE.l
+  
+  gap_DFLE.u = HL_f.u - HL_m.u
+  gap_DFLE.u
+  
+  # The gender gap at age 60 in LE was:
+  gap_LE = mort_cntr_f$ex[1] - mort_cntr_m$ex[1]
+  gap_LE
+  
+  # Decomposing the gap in DFLE
+  HE_Decomp_Cont <- horiuchi(func=Sullivan.fun,
+                             pars1 = mxwx_m, 
+                             pars2 = mxwx_f,
+                             N=20)
+  mort.contr<-HE_Decomp_Cont [1:5]
+  dis.contr<-HE_Decomp_Cont [6:10]
+  
+  sum.mort.contr<-sum(HE_Decomp_Cont [1:5])
+  sum.dis.contr<-sum(HE_Decomp_Cont [6:10])
+  
+  # low CI
+  # Decomposing the gap in DFLE low CI
+  HE_Decomp_Cont.l <- horiuchi(func=Sullivan.fun,
+                               pars1 = mxwx_m.l, 
+                               pars2 = mxwx_f.l,
+                               N=20)
+  mort.contr.l<-HE_Decomp_Cont.l [1:5]
+  dis.contr.l<-HE_Decomp_Cont.l [6:10]
+  
+  sum.mort.contr.l<-sum(HE_Decomp_Cont.l [1:5])
+  sum.dis.contr.l<-sum(HE_Decomp_Cont.l [6:10])
+  
+  # Upper CI
+  # low CI
+  # Decomposing the gap in DFLE Upper CI
+  HE_Decomp_Cont.u <- horiuchi(func=Sullivan.fun,
+                               pars1 = mxwx_m.u, 
+                               pars2 = mxwx_f.u,
+                               N=20)
+  mort.contr.u<-HE_Decomp_Cont.u [1:5]
+  dis.contr.u<-HE_Decomp_Cont.u [6:10]
+  
+  sum.mort.contr.u<-sum(HE_Decomp_Cont.u [1:5])
+  sum.dis.contr.u<-sum(HE_Decomp_Cont.u [6:10])
+  
+  
+  
+  #Outputs
+  out_gap[[i]] <- data.frame(Country=cntr[i],
+                             GAP_DFLE=gap_DFLE,
+                             GAP_DFLE.l=gap_DFLE.l,
+                             GAP_DFLE.u=gap_DFLE.u,
+                             GAP_LE=gap_LE,
+                             Mortality=sum.mort.contr,
+                             Disability=sum.dis.contr,
+                             
+                             Mortality.l=sum.mort.contr.l,
+                             Mortality.u=sum.mort.contr.u,
+                             
+                             Disability.l=sum.dis.contr.l,
+                             Disability.u=sum.dis.contr.u)
+  
+  out_Age_gap[[i]]<- data.frame(Age=c(60,65,70,75,80),
+                                Country=cntr[i],
+                                Mortality=mort.contr,
+                                Disability=dis.contr,
+                                
+                                Mortality.l=mort.contr.l,
+                                Mortality.u=mort.contr.u,
+                                
+                                Disability.l=dis.contr.l,
+                                Disability.u=dis.contr.u)
+}
+# end loop country
 
 out_gap <- do.call(rbind, out_gap) 
 out_Age_gap <- do.call(rbind, out_Age_gap) 
+
 
 
 #------------------------------------------------------------------------#
