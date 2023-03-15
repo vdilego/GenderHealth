@@ -44,10 +44,12 @@ options(scipen=999)
 
 # creating directory folders where outputs are saved
 figs.folder <- here("Manuscript","Figures")
+dat.folder <- here("Manuscript","Data")
 figs.app.folder <- here("Appendix","Figures")
 
 
 dir.create(figs.folder, showWarnings = FALSE, recursive = TRUE)
+dir.create(dat.folder, showWarnings = FALSE, recursive = TRUE)
 dir.create(figs.app.folder, showWarnings = FALSE, recursive = TRUE)
 
 # First setting the folders
@@ -368,7 +370,11 @@ Eng.Age <- data.frame(Age=c(60,65,70,75,80),
 outgap<-rbind(out_gap,Eng)
 outAgegap<-rbind(out_Age_gap,Eng.Age)
 
+# save this dataframes
 
+write.table(outgap, here("Manuscript","Data", "decomp_60_dfle.csv"),sep = ",", row.names = F)
+
+write.table(outAgegap, here("Manuscript","Data", "decomp_age_dfle.csv"),sep = ",", row.names = F)
 
 # ---------------------------------------------------------------------------------------------------------#
 # plots
@@ -380,9 +386,26 @@ outAgegap.long <- outAgegap%>%
   select(1:4) %>% 
   pivot_longer(!c(Age,Country),names_to="type", values_to = "Contribution" ) 
 
+
+outgap.ci <- outgap %>%  
+  select(c(1,8:11)) %>% 
+  pivot_longer(!c(Country),
+               names_sep  = "\\.",
+               names_to=c("type","ci"),
+               values_to = c("Contribution")) 
+
+
+outgap.ci <- outgap.ci%>%  
+  pivot_wider(  names_from = "ci",
+              values_from = "Contribution")
+
+
 outgap.long <- outgap %>%  
-  select(c(1,6:7)) %>% 
-  pivot_longer(!c(Country),names_to="type", values_to = "Contribution" ) 
+  select(c(1,6:7))%>% 
+  pivot_longer(!c(Country),
+               names_to=c("type"),
+               values_to = c("Contribution" )) 
+
 
 # I think we only need one and arrange everthing here:
 
@@ -407,6 +430,7 @@ plot_all_age<- ggplot(data=outAgegap.long , aes(x=factor(Age), y=Contribution,
         legend.background = element_rect(color = NA),
         axis.text.x = element_text( vjust = 0.3, hjust = 1))#+
 
+plot_all_age
 
 # fig.folder
  # plot_all_dis<- ggplot(data=outAgegap.long , aes(x=Country, y=Contribution, 
@@ -451,16 +475,28 @@ dev.off()
 
 
 # summing after age 60
-plot_all_sum60<- ggplot(data=outgap.long , aes(x=Country, y=Contribution, 
-                                                fill=factor(type, levels=c("Mortality","Disability"))))+
+
+plot_all_sum60<- ggplot() +
+geom_bar(data= outgap.long %>%
+                          arrange(Contribution) %>% 
+                          group_by(type) %>% 
+                          mutate(Country=fct_reorder(Country, Contribution,.desc = T)),
+         aes(x=Country, y=Contribution, fill=factor(type, levels=c("Mortality","Disability"))),
+         stat = "identity", position = position_dodge(width = 0.5))+
   #  ggtitle(bquote(~'Germany (SHARE)' ))+
   xlab("Age") +ylab(" ")+
   theme (plot.title = element_text(size = 10))+
-  geom_bar(stat = "identity", position = "stack")+ 
+ # geom_bar(stat = "identity", position = "stack")+ 
+  geom_errorbar(data= outgap.ci,
+                aes(x=Country, ymin=l, ymax=u, 
+                    color=factor(type, levels=c("Mortality","Disability"))),
+                width=0.5, alpha=0.5, size=1.2, show.legend = F, position=position_dodge(width=0.5))+
   scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
+  scale_color_manual(values=alpha(c("darkred", "blue"),0.7))+
+  #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
+
  # ylim(-1.2, 1.7)+
-  geom_hline(yintercept=0, linetype="dashed", 
-             color = "black", size=0.5)+
+  geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
   labs(fill = "Component")+
   theme_minimal(base_size = 12) +
  # facet_wrap(.~Country, ncol = 4)+
@@ -478,7 +514,44 @@ plot_all_sum60
 # with all countries pooled
 
 
- 
+# without error bars
+
+plot_all_sum60_w<- ggplot() +
+  geom_bar(data= outgap.long %>%
+             arrange(Contribution) %>% 
+             group_by(type) %>% 
+             mutate(Country=fct_reorder(Country, Contribution,.desc = T)),
+           aes(x=Country, y=Contribution, fill=factor(type, levels=c("Mortality","Disability"))),
+           stat = "identity", position = "stack")+
+  #  ggtitle(bquote(~'Germany (SHARE)' ))+
+  xlab("Age") +ylab(" ")+
+  theme (plot.title = element_text(size = 10))+
+  # geom_bar(stat = "identity", position = "stack")+ 
+  #geom_errorbar(data= outgap.ci,
+  #              aes(x=Country, ymin=l, ymax=u, 
+  #                  color=factor(type, levels=c("Mortality","Disability"))),
+  #              width=0.5, alpha=0.5, size=1.2, show.legend = F, position=position_dodge(width=0.5))+
+  scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
+  scale_color_manual(values=alpha(c("darkred", "blue"),0.7))+
+  #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
+  
+  # ylim(-1.2, 1.7)+
+  geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
+  labs(fill = "Component")+
+  theme_minimal(base_size = 12) +
+  # facet_wrap(.~Country, ncol = 4)+
+  theme(legend.text=element_text(size=9),
+        legend.title=element_text(size=10),
+        axis.title =  element_text(size=12),title =  element_text(size=12),
+        legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        axis.text.x = element_text( vjust = 0.3, hjust = 1, angle=90))#+
+ # coord_flip()
+
+
+plot_all_sum60_w
+
+
 ggplot(data=outAgegap , aes(x=Disability, y=Mortality,color=Age, fill=Age))+
   #  ggtitle(bquote(~'Germany (SHARE)' ))+
   #xlab("Age") +ylab(" ")+
