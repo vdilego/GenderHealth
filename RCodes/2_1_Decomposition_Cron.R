@@ -409,6 +409,8 @@ outgap.long <- outgap %>%
                values_to = c("Contribution" )) 
 
 
+# saving only this dataset in long format
+
 # I think we only need one and arrange everthing here:
 
 
@@ -428,12 +430,16 @@ plot_all_cron<-ggplot(data=outAgegap.long , aes(x=as.factor(Age), y=Contribution
   theme(legend.text=element_text(size=12),
         legend.title=element_text(size=12),
         axis.title =  element_text(size=12),title =  element_text(size=12),
-        legend.position = "right", 
+        legend.position = "bottom", 
         legend.background = element_rect(color = NA))
 
 # fig.folder
 
 pdf(here(figs.folder,"Decomp_all_cron.pdf"), width = 15, height=17)
+plot_all_cron
+dev.off()
+
+png(here(figs.folder,"Decomp_all_cron.png"), width = 1500, height=1700, res=100)
 plot_all_cron
 dev.off()
 
@@ -474,6 +480,16 @@ plot_all_sum60_cron<- ggplot() +
 
 plot_all_sum60_cron
 
+pdf(here(figs.folder,"Decomp_cron_60_error.pdf"), width = 7, height=10)
+plot_all_sum60_cron
+
+dev.off()
+
+png(here(figs.folder,"Decomp_cron_60_error.png"), width = 800, height=1000, res=100)
+plot_all_sum60_cron
+dev.off()
+
+
 # Same plot without error bars
 
 plot_all_sum60_cron_w<- ggplot() +
@@ -505,12 +521,20 @@ plot_all_sum60_cron_w<- ggplot() +
         axis.title =  element_text(size=12),title =  element_text(size=12),
         legend.position = "bottom", 
         legend.background = element_rect(color = NA),
-        axis.text.x = element_text( vjust = 0.3, hjust = 1, angle=90))+
+        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
   coord_flip()
 
 
 plot_all_sum60_cron_w
 
+pdf(here(figs.folder,"Decomp_cron_60_noerror.pdf"), width = 7, height=10)
+plot_all_sum60_cron_w
+
+dev.off()
+
+png(here(figs.folder,"Decomp_cron_60_noerror.png"), width = 800, height=1000, res=100)
+plot_all_sum60_cron_w
+dev.off()
 
 
 # plots for individual countries

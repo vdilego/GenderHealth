@@ -460,9 +460,10 @@ pdf(here(figs.folder,"Decomp_all.pdf"), width = 10, height=20)
 plot_all_age
 dev.off()
 
-png(here(figs.folder,"Decomp_all.png"), width = 2800, height=4000, res=350)
+png(here(figs.folder,"Decomp_all.png"), width = 1500, height=1700, res=100)
 plot_all_age
 dev.off()
+
 
 
 #pdf(here(figs.folder,"Decomp_all_dis.pdf"), width = 12, height=8)
