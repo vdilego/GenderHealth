@@ -78,11 +78,11 @@ fig_all_conditions<-
          aes(age, country, group=country, fill=unhealthy))+
   geom_raster(interpolate = F) +
   #  geom_tile (color="grey80") +
-  theme_clean(base_size = 14)+
+  theme_clean(base_size = 26)+
   theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
-        legend.title  = element_text(size=10),
-        legend.text = element_text(size=10),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=18),
         axis.text.x = element_text(angle = 90))+
   facet_grid(sex~type)+
   scale_fill_distiller(palette = "Spectral", name="%Unhealthy", n.breaks=4)
@@ -93,7 +93,93 @@ fig_all_conditions
 dev.off()
 
 
-# directories of each survey.
+X11()
+
+  ggplot()+
+  geom_line(data=dis_cron,
+         aes(age, unhealthy, group=country, color=country), color="grey90", size=1.2)+
+    geom_line(data=dis_cron %>% filter(country%in%"Europe"),
+              aes(age, unhealthy, group=country, color=country), size=1.5)+
+    geom_line(data=dis_cron %>% filter(country%in%"US"),
+              aes(age, unhealthy, group=country, color=country), size=1.5)+
+    geom_line(data=dis_cron %>% filter(country%in%"China"),
+              aes(age, unhealthy, group=country, color=country), size=1.5)+
+    geom_line(data=dis_cron %>% filter(country%in%"India"),
+              aes(age, unhealthy, group=country, color=country), size=1.5)+
+    geom_line(data=dis_cron %>% filter(country%in%"Korea"),
+              aes(age, unhealthy, group=country, color=country), size=1.5)+
+    geom_line(data=dis_cron %>% filter(country%in%"Mexico"),
+              aes(age, unhealthy, group=country, color=country), size=1.5)+
+    geom_line(data=dis_cron %>% filter(country%in%"Portugal"),
+              aes(age, unhealthy, group=country, color=country), size=1.5)+
+  theme_clean(base_size =26)+
+  theme(legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=18),
+        axis.text.x = element_text(angle = 90))+
+  facet_grid(sex~type)+
+scale_color_brewer(palette = "PuOr")
+
+  ggplot() +
+    geom_bar(data= dis_cron %>%
+               arrange(unhealthy) %>% 
+               group_by(type) %>% 
+               mutate(country=fct_reorder(country, unhealthy,.desc = T)),
+             aes(x=country, y=unhealthy, fill=factor(sex)),
+             stat = "identity", position = "dodge")+
+    #  ggtitle(bquote(~'Germany (SHARE)' ))+
+    xlab("Age") +ylab(" ")+
+    theme (plot.title = element_text(size = 10))+
+    # geom_bar(stat = "identity", position = "stack")+ 
+    #geom_errorbar(data= outgap.ci,
+    #              aes(x=Country, ymin=l, ymax=u, 
+    #                  color=factor(type, levels=c("Mortality","Disability"))),
+    #              width=0.5, alpha=0.5, size=1.2, show.legend = F, position=position_dodge(width=0.5))+
+    scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
+    scale_color_manual(values=alpha(c("darkred", "blue"),0.7))+
+    #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
+    
+    # ylim(-1.2, 1.7)+
+    geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
+    labs(fill = "Component")+
+    theme_minimal(base_size = 12) +
+    # facet_wrap(.~Country, ncol = 4)+
+    theme(legend.text=element_text(size=9),
+          legend.title=element_text(size=10),
+          axis.title =  element_text(size=12),title =  element_text(size=12),
+          legend.position = "bottom", 
+          legend.background = element_rect(color = NA),
+          axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+    facet_grid(type~age)+
+    coord_flip()
+  
+  
+  library(ggalt)
+  library(ggtext)
+  library(extrafont)
+  
+# making  a dumbbell to check
+  dis_cron_bell<-dis_cron %>% 
+    pivot_wider(id_cols = c(age,country,type), names_from = sex, values_from = unhealthy)
+  
+  
+  ggplot(dis_cron_bell %>%
+            arrange(woman) %>%
+          #  filter(!location%in%"Canada") %>% 
+            mutate(country=fct_reorder(country, woman,.desc = T)))+ 
+    geom_dumbbell(size=1, color="black",
+                  aes(y = country, x=woman, xend=man, color=type),
+                  size_x = 3.5, size_xend = 3.5, colour_x = '#B6407D', colour_xend = '#11718A') +
+    facet_grid(type~age)+
+    theme_clean()+
+    theme(axis.text.x = element_text( vjust = 0.3, hjust = 1, angle = 90))
+
+  
+  
+  
+  
+  # directories of each survey.
 prev.dir.share<-here("Data","SHARE","Prevalence") 
 prev.dir.elsa<-here("Data","ELSA","Prevalence")
 prev.dir.lasi<-here("Data","LASI","Prevalence")
@@ -141,7 +227,7 @@ prev.all<-rbind(prev.share.cntry,prev.share, prev.elsa,prev.lasi,prev.charls,pre
 
 ggplot()+
   
-  geom_line(data=prev.all,aes(age, unhealthy, group=country,color=country),size=1, color="grey90")+
+  geom_line(data=prev.all,aes(age, unhealthy, group=country,color=gender),size=1, color="grey90")+
   # geom_line(data=prev.all, aes(age, unhealthy, group=gender,color=gender))+
   # geom_point(size=2.7, alpha=0.7)+
   theme_clean(base_size = 14)+
@@ -152,8 +238,6 @@ ggplot()+
   geom_line(data=prev.all,aes(age, unhealthy, group=country,color=gender),size=1)+
   #scale_color_manual(values = c("brown","darkblue"))+
   scale_color_manual(values = c('#882255','#009988')) 
-
-X11()
 
 
 # Helper function for string wrapping because names are too large in the facets
@@ -169,20 +253,26 @@ prev.all$type = swr(prev.all$type)
 
 
 
-fig_prev_all<-ggplot(prev.all,
+fig_prev_all<-
+  
+  ggplot(prev.all,
                      aes(age, country, group=country, fill=unhealthy))+
   geom_raster(interpolate = F) +
   # geom_tile (color="white") +
-  theme_clean(base_size = 18)+
+  theme_clean(base_size = 24)+
   theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
-        legend.title  = element_text(size=10),
-        legend.text = element_text(size=10),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=18),
         axis.text.x = element_text(angle = 90))+
   facet_grid(gender~type)+
   scale_fill_distiller(palette = "Spectral", 
                        name="%Unhealthy", n.breaks=4)
 
-pdf(here("Gender_health", "Manuscript","Figures","fig_prev_all.pdf"), width = 18, height=8)
+pdf(here("Manuscript","Figures","fig_prev_all.pdf"), width = 20, height=24)
+fig_prev_all
+dev.off()
+
+png(here("Manuscript","Figures","fig_prev_all.png"), width = 2000, height=2200)
 fig_prev_all
 dev.off()

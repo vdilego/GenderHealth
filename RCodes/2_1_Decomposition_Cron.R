@@ -425,13 +425,14 @@ plot_all_cron<-ggplot(data=outAgegap.long , aes(x=as.factor(Age), y=Contribution
   geom_hline(yintercept=0, linetype="dashed", 
              color = "black", size=0.5)+
   labs(fill = "Component")+
-  theme_minimal(base_size = 16) +
+  theme_minimal(base_size = 24) +
   facet_wrap(.~Country)+
-  theme(legend.text=element_text(size=12),
-        legend.title=element_text(size=12),
-        axis.title =  element_text(size=12),title =  element_text(size=12),
+  theme(legend.text=element_text(size=18),
+        legend.title=element_text(size=18),
+        axis.title =  element_text(size=18),title =  element_text(size=18),
         legend.position = "bottom", 
-        legend.background = element_rect(color = NA))
+        legend.background = element_rect(color = NA),
+        strip.text.x = element_text(size=16))
 
 # fig.folder
 
@@ -467,14 +468,14 @@ plot_all_sum60_cron<- ggplot() +
   # ylim(-1.2, 1.7)+
   geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
   labs(fill = "Component")+
-  theme_minimal(base_size = 12) +
+  theme_minimal(base_size = 25) +
   # facet_wrap(.~Country, ncol = 4)+
-  theme(legend.text=element_text(size=9),
-        legend.title=element_text(size=10),
-        axis.title =  element_text(size=12),title =  element_text(size=12),
+  theme(legend.text=element_text(size=18),
+        legend.title=element_text(size=18),
+        axis.title =  element_text(size=18),title =  element_text(size=18),
         legend.position = "bottom", 
         legend.background = element_rect(color = NA),
-        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+        axis.text.x = element_text( vjust = 0.3, hjust = 1, angle=90))#+
   coord_flip()
 
 
