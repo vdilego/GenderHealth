@@ -417,7 +417,7 @@ p2<-ggplot(decomp.all.long, aes(Country,values.m, color=Mortality))+
         legend.text = element_text(size=18),
         axis.text.x = element_text(angle = 90,vjust = 0.3, hjust = 1))+
   ylab("Contribution to Gender Gap")+
-  scale_color_manual(values=c('#B6407D', '#11718A'))+
+  scale_color_manual(values=c( '#11718A','#B6407D'))+
   geom_hline(yintercept=0, linetype="dashed")
 
 
