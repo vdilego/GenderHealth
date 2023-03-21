@@ -500,11 +500,11 @@ geom_bar(data= outgap.long %>%
  # ylim(-1.2, 1.7)+
   geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
   labs(fill = "Component")+
-  theme_minimal(base_size = 12) +
+  theme_minimal(base_size = 25) +
  # facet_wrap(.~Country, ncol = 4)+
-  theme(legend.text=element_text(size=9),
-        legend.title=element_text(size=10),
-        axis.title =  element_text(size=12),title =  element_text(size=12),
+  theme(legend.text=element_text(size=18),
+        legend.title=element_text(size=18),
+        axis.title =  element_text(size=18),title =  element_text(size=12),
         legend.position = "bottom", 
         legend.background = element_rect(color = NA),
         axis.text.x = element_text( vjust = 0.3, hjust = 1))+
