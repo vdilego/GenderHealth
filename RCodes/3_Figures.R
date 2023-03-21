@@ -98,20 +98,42 @@ X11()
   ggplot()+
   geom_line(data=dis_cron,
          aes(age, unhealthy, group=country, color=country), color="grey90", size=1.2)+
+    
+    geom_point(data=dis_cron %>% filter(country%in%"Europe"),
+              aes(age, unhealthy, group=country, color=country), size=3.2)+
     geom_line(data=dis_cron %>% filter(country%in%"Europe"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+               aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+    
+    geom_point(data=dis_cron %>% filter(country%in%"US"),
+              aes(age, unhealthy, group=country, color=country), size=3.2)+
     geom_line(data=dis_cron %>% filter(country%in%"US"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+   
+     geom_point(data=dis_cron %>% filter(country%in%"China"),
+              aes(age, unhealthy, group=country, color=country), size=3.2)+
     geom_line(data=dis_cron %>% filter(country%in%"China"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+    
+    geom_point(data=dis_cron %>% filter(country%in%"India"),
+              aes(age, unhealthy, group=country, color=country), size=3.2)+
     geom_line(data=dis_cron %>% filter(country%in%"India"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+    
+    geom_point(data=dis_cron %>% filter(country%in%"Korea"),
+              aes(age, unhealthy, group=country, color=country), size=3.2)+
     geom_line(data=dis_cron %>% filter(country%in%"Korea"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+    
+    geom_point(data=dis_cron %>% filter(country%in%"Mexico"),
+              aes(age, unhealthy, group=country, color=country), size=3.2)+
     geom_line(data=dis_cron %>% filter(country%in%"Mexico"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+    
+    geom_point(data=dis_cron %>% filter(country%in%"Portugal"),
+              aes(age, unhealthy, group=country, color=country), size=3.2)+
     geom_line(data=dis_cron %>% filter(country%in%"Portugal"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+    
   theme_clean(base_size =26)+
   theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
@@ -119,9 +141,17 @@ X11()
         legend.text = element_text(size=18),
         axis.text.x = element_text(angle = 90))+
   facet_grid(sex~type)+
-scale_color_brewer(palette = "PuOr")
-
-  ggplot() +
+ #   scale_colour_grafify(palette = "muted") #not sequential colours
+     scale_color_manual(values = c("dodgerblue4",
+                                    "darkolivegreen4",
+                                    "darkorchid3",
+                                    "goldenrod1",
+                                   "grey30",
+                                   "firebrick","black"))
+ 
+  
+  
+   ggplot() +
     geom_bar(data= dis_cron %>%
                arrange(unhealthy) %>% 
                group_by(type) %>% 
@@ -224,22 +254,6 @@ prev.all<-rbind(prev.share.cntry,prev.share, prev.elsa,prev.lasi,prev.charls,pre
                 prev.klosa,prev.mhas)
 
 # plots with all
-
-ggplot()+
-  
-  geom_line(data=prev.all,aes(age, unhealthy, group=country,color=gender),size=1, color="grey90")+
-  # geom_line(data=prev.all, aes(age, unhealthy, group=gender,color=gender))+
-  # geom_point(size=2.7, alpha=0.7)+
-  theme_clean(base_size = 14)+
-  facet_grid(gender~type)+
-  theme(legend.position = "bottom", legend.background = element_rect(color = NA))+
-  ylab("Prevalence Unhealthy")+
-  scale_x_discrete(labels = c(50,55,60,65,70,75,80,85,90))+
-  geom_line(data=prev.all,aes(age, unhealthy, group=country,color=gender),size=1)+
-  #scale_color_manual(values = c("brown","darkblue"))+
-  scale_color_manual(values = c('#882255','#009988')) 
-
-
 # Helper function for string wrapping because names are too large in the facets
 # Default 20 character target width.
 swr = function(string, nwrap=20) {
@@ -249,6 +263,71 @@ swr = function(string, nwrap=20) {
 swr = Vectorize(swr)
 
 prev.all$type = swr(prev.all$type)
+prev.all<-prev.all %>% 
+  filter(!type %in%c("one or two any\ncondition")) %>% 
+  droplevels()
+
+
+ggplot()+
+geom_line(data=prev.all,
+          aes(age, unhealthy, group=country,color=country),size=1, color="grey90")+
+  
+  geom_point(data=prev.all %>% filter(country%in%"Europe" ),
+             aes(age, unhealthy, group=country, color=country), size=3.2)+
+  geom_line(data=prev.all %>% filter(country%in%"Europe"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+  
+  geom_point(data=prev.all%>% filter(country%in%"US"),
+             aes(age, unhealthy, group=country, color=country), size=3.2)+
+  geom_line(data=prev.all %>% filter(country%in%"US"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+  
+  geom_point(data=prev.all %>% filter(country%in%"China"),
+             aes(age, unhealthy, group=country, color=country), size=3.2)+
+  geom_line(data=prev.all %>% filter(country%in%"China"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+  
+  geom_point(data=prev.all %>% filter(country%in%"India"),
+             aes(age, unhealthy, group=country, color=country), size=3.2)+
+  geom_line(data=prev.all %>% filter(country%in%"India"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+  
+  geom_point(data=prev.all %>% filter(country%in%"Korea"),
+             aes(age, unhealthy, group=country, color=country), size=3.2)+
+  geom_line(data=prev.all %>% filter(country%in%"Korea"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+  
+  geom_point(data=prev.all %>% filter(country%in%"Mexico"),
+             aes(age, unhealthy, group=country, color=country), size=3.2)+
+  geom_line(data=prev.all %>% filter(country%in%"Mexico"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+  
+  geom_point(data=prev.all %>% filter(country%in%"Portugal"),
+             aes(age, unhealthy, group=country, color=country), size=3.2)+
+  geom_line(data=prev.all %>% filter(country%in%"Portugal"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1)+
+  
+  facet_grid(gender~type)+
+  
+  theme_clean(base_size =26)+
+  theme(legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=18),
+        axis.text.x = element_text(angle = 90))+
+  #   scale_colour_grafify(palette = "muted") #not sequential colours
+  scale_color_manual(values = c("dodgerblue4",
+                                "darkolivegreen4",
+                                "darkorchid3",
+                                "goldenrod1",
+                                "grey30",
+                                "firebrick","black"))+
+  ylab("%Unhealthy")
+
+
+
+
+
 
 
 
@@ -276,3 +355,92 @@ dev.off()
 png(here("Manuscript","Figures","fig_prev_all.png"), width = 2000, height=2200)
 fig_prev_all
 dev.off()
+
+
+# now joining all decompositions for ages 60+
+
+decomp.dfle<-fread(here("Manuscript","Data", "decomp_60_dfle.csv")) %>% 
+  mutate(Mort.ADL=Mortality) %>% 
+  select(Country, Disability,Mort.ADL)
+
+
+decomp.cfle<-fread(here("Manuscript","Data", "decomp_60_dfle_chronic.csv")) %>% 
+  mutate(Mort.Chronic=Mortality)%>% 
+  select(Country, Chronic,Mort.Chronic)
+
+decomp.all<-full_join(decomp.cfle,decomp.dfle) %>% 
+  pivot_longer(cols=c(2,4), names_to = c("Health"), values_to = "values")
+
+decomp.all.long<-decomp.all %>% 
+  pivot_longer(cols=c(2,3), names_to = c("Mortality"), values_to = "values.m")
+
+
+X11()
+
+library(ggExtra)
+library(ggside)
+library(tidyquant)
+
+
+p<-ggplot(decomp.all.long, aes(Country,values, color=Health))+
+  geom_point(size = 5, alpha=0.6)+
+ #facet_zoom(x = Country %in%c ("US","Europe"))+
+#  theme_bw()+
+  theme_bw(base_size = 24)+
+  theme(legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=18),
+        axis.text.x = element_text(angle = 90,vjust = 0.3, hjust = 1))+
+  ylab("Contribution to Gender Gap")+
+  scale_color_manual(values=c('#B6407D', '#11718A'))+
+  geom_hline(yintercept=0, linetype="dashed")
+
+
+p
+
+
+p1 <- ggMarginal(p, type="histogram", groupColour = TRUE,  groupFill = TRUE)
+
+
+p1
+
+
+p2<-ggplot(decomp.all.long, aes(Country,values.m, color=Mortality))+
+  geom_point(size = 5, alpha=0.6)+
+  #facet_zoom(x = Country %in%c ("US","Europe"))+
+  #  theme_bw()+
+  theme_bw(base_size = 24)+
+  theme(legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=18),
+        axis.text.x = element_text(angle = 90,vjust = 0.3, hjust = 1))+
+  ylab("Contribution to Gender Gap")+
+  scale_color_manual(values=c('#B6407D', '#11718A'))+
+  geom_hline(yintercept=0, linetype="dashed")
+
+
+p2
+
+
+p3 <- ggMarginal(p2, type="histogram", groupColour = TRUE,  groupFill = TRUE)
+
+
+p3
+
+
+
+
+#decomp.all<-full_join(decomp.cfle,decomp.dfle) %>% 
+#  mutate(Welf.State=case_when(Country%in%c("Denmark","Finland","Norway","Sweden")~ "Scandinavian",
+#                              Country%in%c("England","US")~"Anglo-Saxon",
+#                              Country%in%c("Germany","France","Austria","Belgium",
+#                                           "Luxembourg")~ "Bismarckian",
+#                              Country%in%c("Greece","Italy","Portugal","Spain")~ "Southern",
+#                              Country%in%c("Czech Republic","Poland","Estonia", "Croatia",
+ #                                          "Slovenia" )~ "Eastern",
+#                              Country%in%c("Korea","China","India" )~ "East Asia",
+#                              
+#                              TRUE                      ~ "other" ))
+

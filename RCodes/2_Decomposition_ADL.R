@@ -428,7 +428,7 @@ plot_all_age<- ggplot(data=outAgegap.long , aes(x=factor(Age), y=Contribution,
         axis.title =  element_text(size=18),title =  element_text(size=18),
         legend.position = "bottom", 
         legend.background = element_rect(color = NA),
-        axis.text.x = element_text( vjust = 0.3, hjust = 1),
+      #  axis.text.x = element_text( vjust = 0.3, hjust = 1),
         strip.text.x = element_text(size=16))#+
 
 plot_all_age
