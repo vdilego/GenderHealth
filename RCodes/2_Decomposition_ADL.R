@@ -196,6 +196,7 @@ for (i in 1:length(cntr)) {
                              GAP_DFLE.l=gap_DFLE.l,
                              GAP_DFLE.u=gap_DFLE.u,
                              GAP_LE=gap_LE,
+                             
                              Mortality=sum.mort.contr,
                              Disability=sum.dis.contr,
                              
