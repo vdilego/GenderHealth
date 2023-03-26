@@ -14,6 +14,7 @@ rm(list=ls(all=TRUE))
 
 # loading necessary packages
 library(MortalityLaws)
+
 library(dplyr)
 library(tidyverse)
 library(lubridate)
@@ -289,8 +290,14 @@ decomp.cfle<-fread(here("Manuscript","Data", "decomp_60_dfle_chronic.csv")) %>%
 
 colnames(decomp.cfle)<-c("Country","GAP_CFLE","GAP_LE", "Mort.Cron","Chronic")
 
-decomp.all<-full_join(decomp.cfle,decomp.dfle)
+decomp.all<-full_join(decomp.cfle,decomp.dfle) %>% 
+  mutate(GAP.dfle= cut(GAP_DFLE, breaks=c(-0.4, 0, 1,3,5),include.lowest = TRUE),
+         GAP.dfle=factor(GAP.dfle, levels=c("[-0.4,0]", "(0,1]", "(1,3]", "(3,5]"), 
+                         labels=c("< 0", "0 - 1", "1 - 3", "3 - 5")))
 
+
+
+X11()
 
 # %>% 
 #  mutate(Welf.State=case_when(Country%in%c("Denmark","Finland","Norway","Sweden")~ "Scandinavian",
@@ -309,12 +316,22 @@ decomp.all<-full_join(decomp.cfle,decomp.dfle)
 #ggplot(decomp.all, aes(GAP_CFLE,GAP_DFLE, group=Country, color=Welf.State))+
 #  geom_point()
 
+library(ggpubr)
 
-ggplot(decomp.all, aes(GAP_LE,GAP_DFLE, group=Country))+
-  geom_point()
+ggplot(decomp.all, aes(Mortality,Disability, group=Country,color=GAP.dfle,
+                       fill=GAP.dfle))+
+  geom_point(size=3.5, color="black")+
+   geom_point(size=3, alpha=0.7)+
+    scale_color_brewer(palette="Spectral")+
+  scale_fill_brewer(palette="Spectral")+
+  theme_bw()+
+  stat_cor(method = "pearson")
 
-ggplot(decomp.all, aes(GAP_LE,GAP_CFLE, group=Country))+
-  geom_point()
+
+
+
+  
+
 
 
 
