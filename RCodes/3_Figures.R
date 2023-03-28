@@ -74,8 +74,7 @@ cron<-fread(here(dis.folder,"all_prev_cron.csv")) %>%
 dis_cron<-full_join(dis,cron)
 
 
-fig_all_conditions<-
-  ggplot(dis_cron,
+fig_all_conditions<-ggplot(dis_cron,
          aes(age, country, group=country, fill=unhealthy))+
   geom_raster(interpolate = F) +
   #  geom_tile (color="grey80") +
@@ -94,34 +93,59 @@ fig_all_conditions
 dev.off()
 
 
-X11()
 
-  ggplot()+
+fig_selected<- ggplot()+
   geom_line(data=dis_cron,
          aes(age, unhealthy, group=country, color=country), color="grey90", size=1.2)+
     geom_line(data=dis_cron %>% filter(country%in%"Europe"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+    geom_point(data=dis_cron %>% filter(country%in%"Europe"),
+              aes(age, unhealthy, group=country, color=country), size=2.3)+
+    
     geom_line(data=dis_cron %>% filter(country%in%"US"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+    geom_point(data=dis_cron %>% filter(country%in%"US"),
+               aes(age, unhealthy, group=country, color=country), size=2.3)+
+    
     geom_line(data=dis_cron %>% filter(country%in%"China"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+    geom_point(data=dis_cron %>% filter(country%in%"China"),
+               aes(age, unhealthy, group=country, color=country), size=2.3)+
+    
     geom_line(data=dis_cron %>% filter(country%in%"India"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+    geom_point(data=dis_cron %>% filter(country%in%"India"),
+               aes(age, unhealthy, group=country, color=country), size=2.3)+
+    
     geom_line(data=dis_cron %>% filter(country%in%"Korea"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+    geom_point(data=dis_cron %>% filter(country%in%"Korea"),
+               aes(age, unhealthy, group=country, color=country), size=2.3)+
+    
     geom_line(data=dis_cron %>% filter(country%in%"Mexico"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
-    geom_line(data=dis_cron %>% filter(country%in%"Portugal"),
-              aes(age, unhealthy, group=country, color=country), size=1.5)+
+              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+    geom_point(data=dis_cron %>% filter(country%in%"Mexico"),
+               aes(age, unhealthy, group=country, color=country), size=2.3)+
+  #  geom_line(data=dis_cron %>% filter(country%in%"Portugal"),
+   #           aes(age, unhealthy, group=country, color=country), size=1.5)+
   theme_clean(base_size =26)+
   theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
         legend.title  = element_text(size=18),
         legend.text = element_text(size=18),
-        axis.text.x = element_text(angle = 90))+
+        axis.text.x = element_text(angle = 90),
+        panel.border = element_blank(),
+        plot.background = element_blank())+
   facet_grid(sex~type)+
-scale_color_brewer(palette = "PuOr")
+#scale_color_brewer(palette = "PuOr")
+scale_color_manual(values=c("#ab864a","#5d7dc3","#0d3173",
+                            "#ba1e68","#6ba772","black"))
 
+pdf(here(figs.folder,"fig_3.pdf"), width = 10, height=10)
+fig_selected
+dev.off()
+  
+  
   ggplot() +
     geom_bar(data= dis_cron %>%
                arrange(unhealthy) %>% 
@@ -154,6 +178,8 @@ scale_color_brewer(palette = "PuOr")
           axis.text.x = element_text( vjust = 0.3, hjust = 1))+
     facet_grid(type~age)+
     coord_flip()
+  
+  
   
   
   library(ggalt)
@@ -293,7 +319,10 @@ colnames(decomp.cfle)<-c("Country","GAP_CFLE","GAP_LE", "Mort.Cron","Chronic")
 decomp.all<-full_join(decomp.cfle,decomp.dfle) %>% 
   mutate(GAP.dfle= cut(GAP_DFLE, breaks=c(-0.4, 0, 1,3,5),include.lowest = TRUE),
          GAP.dfle=factor(GAP.dfle, levels=c("[-0.4,0]", "(0,1]", "(1,3]", "(3,5]"), 
-                         labels=c("< 0", "0 - 1", "1 - 3", "3 - 5")))
+                         labels=c("< 0", "0 - 1", "1 - 3", "3 - 5")),
+         GAP.cfle= cut(GAP_CFLE, breaks=c(-2.4, -1.5,0,1.7),include.lowest = TRUE),
+         GAP.cfle=factor(GAP.cfle, levels=c("[-2.4,-1.5]", "(-1.5,0]", "(0,1.7]"), 
+                         labels=c("< -1.5", "-1.5- 0", "0 - 1.5")))
 
 
 
@@ -317,21 +346,144 @@ X11()
 #  geom_point()
 
 library(ggpubr)
+library(ggforce)
+library("ggfortify")
+library(showtext)
 
-ggplot(decomp.all, aes(Mortality,Disability, group=Country,color=GAP.dfle,
-                       fill=GAP.dfle))+
-  geom_point(size=3.5, color="black")+
-   geom_point(size=3, alpha=0.7)+
-    scale_color_brewer(palette="Spectral")+
-  scale_fill_brewer(palette="Spectral")+
-  theme_bw()+
-  stat_cor(method = "pearson")
-
+# select labels: high and low gap
+decomp.all.l<-decomp.all %>% 
+  arrange(Country,GAP_DFLE) %>% 
+  slice(which.min(GAP_DFLE))
 
 
+decomp.all.u<-decomp.all %>% 
+  arrange(Country,GAP_DFLE) %>% 
+  slice(which.max(GAP_DFLE)) 
 
+X11()
+
+fig4<-ggplot(decomp.all, aes(Mortality,Disability, group=GAP.dfle, 
+                       color=GAP.dfle,fill=GAP.dfle))+
+   geom_point(size=4)+
+ #   scale_color_brewer(palette="Spectral")+
+ 
+# scale_color_brewer(palette="PuOr")+
+ # scale_color_manual(values=pal)+
+    geom_mark_ellipse(data=decomp.all %>% 
+                        filter(GAP.dfle%in%c("< 0","3 - 5")),
+                      aes(fill = GAP.dfle)) +
+  scale_y_reverse()+
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
+  scale_y_continuous(limits = c(-3, 1)) +
+  scale_color_brewer(palette="RdBu", direction = -1)+
+  scale_fill_brewer(palette="RdBu", direction = -1)+
+  theme_clean(base_size =24)+
+  theme(legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=20),
+        panel.border = element_blank(),
+        plot.background = element_blank())+
+  ggrepel::geom_text_repel(data=decomp.all.l, 
+             aes(Mortality,Disability, label=Country),
+             box.padding = 0.9, show.legend=FALSE,size = 7)+
+  ggrepel:: geom_text_repel(data=decomp.all.u, 
+             aes(Mortality,Disability, label=Country),
+             box.padding = 0.8, show.legend=FALSE,size = 7)
   
 
+pdf(here("Manuscript","Figures","fig4.1.pdf"), width = 10, height=10)
+fig4
+dev.off()
 
+
+# same figure for chronic
+
+fig4.2<-ggplot(decomp.all, aes(Mort.Cron,Chronic, group=GAP.dfle, 
+                             color=GAP.dfle,fill=GAP.dfle))+
+  geom_point(size=4)+
+  #   scale_color_brewer(palette="Spectral")+
+  
+  # scale_color_brewer(palette="PuOr")+
+  # scale_color_manual(values=pal)+
+  geom_mark_ellipse(data=decomp.all %>% 
+                      filter(GAP.dfle%in%c("< 0","3 - 5")),
+                    aes(fill = GAP.dfle)) +
+  scale_y_reverse()+
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
+  scale_y_continuous(limits = c(-3, 1)) +
+  scale_color_brewer(palette="RdBu", direction = -1)+
+  scale_fill_brewer(palette="RdBu", direction = -1)+
+  theme_clean(base_size =24)+
+  theme(legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=20),
+        panel.border = element_blank(),
+        plot.background = element_blank())+
+  ggrepel::geom_text_repel(data=decomp.all.l, 
+                           aes(Mortality,Disability, label=Country),
+                           box.padding = 0.9, show.legend=FALSE,size = 7)+
+  ggrepel:: geom_text_repel(data=decomp.all.u, 
+                            aes(Mortality,Disability, label=Country),
+                            box.padding = 0.8, show.legend=FALSE,size = 7)
+
+
+pdf(here("Manuscript","Figures","fig4.2.pdf"), width = 10, height=10)
+fig4.2
+dev.off()
+
+
+
+#library(ggalt)
+library(ggtext)
+library(extrafont)
+
+# making  a dumbbell to check
+
+ggplot(decomp.all, aes(GAP.dfle,Country, group=Country,color=GAP.dfle))
+
+ggplot(decomp.all%>%
+         arrange(GAP_DFLE) %>%
+         #  filter(!location%in%"Canada") %>% 
+         mutate(Country=fct_reorder(Country, GAP_DFLE,.desc = F)))+ 
+  geom_dumbbell(size=1, color="black",
+                aes(y = Country, x=Mortality, xend=Disability, color=GAP.dfle),
+                size_x = 3.5, size_xend = 3.5, colour_x = '#B6407D', colour_xend = '#11718A') +
+ # facet_grid(type~age)+
+  theme_clean()+
+  theme(axis.text.x = element_text( vjust = 0.3, hjust = 1, angle = 90))
+
+
+
+#adding correlation
+
+decomp.all<-decomp.all %>% 
+  mutate(cor.dfle=cor.test(GAP_LE, GAP_DFLE, method = "pearson", conf.level = 0.95)$estimate,
+         cor.dfle.p=cor.test(GAP_LE, GAP_DFLE, method = "pearson", conf.level = 0.95)$p.value)
+
+
+
+View(decomp.all)
+  
+
+font_add_google("Fira Sans", "firasans")
+showtext_auto()
+
+theme_customs <- theme(
+  text = element_text(family = 'firasans', size = 16),
+  plot.title.position = 'plot',
+  plot.title = element_text(
+    face = 'bold', 
+    colour = thematic::okabe_ito(8)[6],
+    margin = margin(t = 2, r = 0, b = 7, l = 0, unit = "mm")
+  ),
+)
+
+theme_set(theme_minimal() + theme_customs)
+
+pal<-c("#ab864a", "#5d7dc3", "#0d3173", "#5c689a", "#8c8e9a", "#37345f") 
+colors <- thematic::okabe_ito(8)[-6]
+colors
 
 
