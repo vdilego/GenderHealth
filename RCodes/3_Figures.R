@@ -75,7 +75,7 @@ dis_cron<-full_join(dis,cron)
 
 
 fig_all_conditions<-ggplot(dis_cron,
-         aes(age, country, group=country, fill=unhealthy))+
+                           aes(age, country, group=country, fill=unhealthy))+
   geom_raster(interpolate = F) +
   #  geom_tile (color="grey80") +
   theme_clean(base_size = 26)+
@@ -88,7 +88,7 @@ fig_all_conditions<-ggplot(dis_cron,
   scale_fill_distiller(palette = "Spectral", name="%Unhealthy", n.breaks=4)
 
 
-pdf(here("Gender_health", "Countries","EUROPE","Descriptive","fig_prev_cron_country.pdf"), width = 18, height=8)
+pdf(here( "Countries","EUROPE","Descriptive","fig_prev_cron_country.pdf"), width = 18, height=8)
 fig_all_conditions
 dev.off()
 
@@ -96,38 +96,38 @@ dev.off()
 
 fig_selected<- ggplot()+
   geom_line(data=dis_cron,
-         aes(age, unhealthy, group=country, color=country), color="grey90", size=1.2)+
-    geom_line(data=dis_cron %>% filter(country%in%"Europe"),
-              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
-    geom_point(data=dis_cron %>% filter(country%in%"Europe"),
-              aes(age, unhealthy, group=country, color=country), size=2.3)+
-    
-    geom_line(data=dis_cron %>% filter(country%in%"US"),
-              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
-    geom_point(data=dis_cron %>% filter(country%in%"US"),
-               aes(age, unhealthy, group=country, color=country), size=2.3)+
-    
-    geom_line(data=dis_cron %>% filter(country%in%"China"),
-              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
-    geom_point(data=dis_cron %>% filter(country%in%"China"),
-               aes(age, unhealthy, group=country, color=country), size=2.3)+
-    
-    geom_line(data=dis_cron %>% filter(country%in%"India"),
-              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
-    geom_point(data=dis_cron %>% filter(country%in%"India"),
-               aes(age, unhealthy, group=country, color=country), size=2.3)+
-    
-    geom_line(data=dis_cron %>% filter(country%in%"Korea"),
-              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
-    geom_point(data=dis_cron %>% filter(country%in%"Korea"),
-               aes(age, unhealthy, group=country, color=country), size=2.3)+
-    
-    geom_line(data=dis_cron %>% filter(country%in%"Mexico"),
-              aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
-    geom_point(data=dis_cron %>% filter(country%in%"Mexico"),
-               aes(age, unhealthy, group=country, color=country), size=2.3)+
+            aes(age, unhealthy, group=country, color=country), color="grey90", size=1.2)+
+  geom_line(data=dis_cron %>% filter(country%in%"Europe"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+  geom_point(data=dis_cron %>% filter(country%in%"Europe"),
+             aes(age, unhealthy, group=country, color=country), size=2.3)+
+  
+  geom_line(data=dis_cron %>% filter(country%in%"US"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+  geom_point(data=dis_cron %>% filter(country%in%"US"),
+             aes(age, unhealthy, group=country, color=country), size=2.3)+
+  
+  geom_line(data=dis_cron %>% filter(country%in%"China"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+  geom_point(data=dis_cron %>% filter(country%in%"China"),
+             aes(age, unhealthy, group=country, color=country), size=2.3)+
+  
+  geom_line(data=dis_cron %>% filter(country%in%"India"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+  geom_point(data=dis_cron %>% filter(country%in%"India"),
+             aes(age, unhealthy, group=country, color=country), size=2.3)+
+  
+  geom_line(data=dis_cron %>% filter(country%in%"Korea"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+  geom_point(data=dis_cron %>% filter(country%in%"Korea"),
+             aes(age, unhealthy, group=country, color=country), size=2.3)+
+  
+  geom_line(data=dis_cron %>% filter(country%in%"Mexico"),
+            aes(age, unhealthy, group=country, color=country, linetype=country), size=1.5)+
+  geom_point(data=dis_cron %>% filter(country%in%"Mexico"),
+             aes(age, unhealthy, group=country, color=country), size=2.3)+
   #  geom_line(data=dis_cron %>% filter(country%in%"Portugal"),
-   #           aes(age, unhealthy, group=country, color=country), size=1.5)+
+  #           aes(age, unhealthy, group=country, color=country), size=1.5)+
   theme_clean(base_size =26)+
   theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
@@ -137,76 +137,76 @@ fig_selected<- ggplot()+
         panel.border = element_blank(),
         plot.background = element_blank())+
   facet_grid(sex~type)+
-#scale_color_brewer(palette = "PuOr")
-scale_color_manual(values=c("#ab864a","#5d7dc3","#0d3173",
-                            "#ba1e68","#6ba772","black"))
+  #scale_color_brewer(palette = "PuOr")
+  scale_color_manual(values=c("#ab864a","#5d7dc3","#0d3173",
+                              "#ba1e68","#6ba772","black"))
 
 pdf(here(figs.folder,"fig_3.pdf"), width = 10, height=10)
 fig_selected
 dev.off()
-  
-  
-  ggplot() +
-    geom_bar(data= dis_cron %>%
-               arrange(unhealthy) %>% 
-               group_by(type) %>% 
-               mutate(country=fct_reorder(country, unhealthy,.desc = T)),
-             aes(x=country, y=unhealthy, fill=factor(sex)),
-             stat = "identity", position = "dodge")+
-    #  ggtitle(bquote(~'Germany (SHARE)' ))+
-    xlab("Age") +ylab(" ")+
-    theme (plot.title = element_text(size = 10))+
-    # geom_bar(stat = "identity", position = "stack")+ 
-    #geom_errorbar(data= outgap.ci,
-    #              aes(x=Country, ymin=l, ymax=u, 
-    #                  color=factor(type, levels=c("Mortality","Disability"))),
-    #              width=0.5, alpha=0.5, size=1.2, show.legend = F, position=position_dodge(width=0.5))+
-    scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
-    scale_color_manual(values=alpha(c("darkred", "blue"),0.7))+
-    #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
-    
-    # ylim(-1.2, 1.7)+
-    geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
-    labs(fill = "Component")+
-    theme_minimal(base_size = 12) +
-    # facet_wrap(.~Country, ncol = 4)+
-    theme(legend.text=element_text(size=9),
-          legend.title=element_text(size=10),
-          axis.title =  element_text(size=12),title =  element_text(size=12),
-          legend.position = "bottom", 
-          legend.background = element_rect(color = NA),
-          axis.text.x = element_text( vjust = 0.3, hjust = 1))+
-    facet_grid(type~age)+
-    coord_flip()
-  
-  
-  
-  
-  library(ggalt)
-  library(ggtext)
-  library(extrafont)
-  
-# making  a dumbbell to check
-  dis_cron_bell<-dis_cron %>% 
-    pivot_wider(id_cols = c(age,country,type), names_from = sex, values_from = unhealthy)
-  
-  
-  ggplot(dis_cron_bell %>%
-            arrange(woman) %>%
-          #  filter(!location%in%"Canada") %>% 
-            mutate(country=fct_reorder(country, woman,.desc = T)))+ 
-    geom_dumbbell(size=1, color="black",
-                  aes(y = country, x=woman, xend=man, color=type),
-                  size_x = 3.5, size_xend = 3.5, colour_x = '#B6407D', colour_xend = '#11718A') +
-    facet_grid(type~age)+
-    theme_clean()+
-    theme(axis.text.x = element_text( vjust = 0.3, hjust = 1, angle = 90))
 
+
+ggplot() +
+  geom_bar(data= dis_cron %>%
+             arrange(unhealthy) %>% 
+             group_by(type) %>% 
+             mutate(country=fct_reorder(country, unhealthy,.desc = T)),
+           aes(x=country, y=unhealthy, fill=factor(sex)),
+           stat = "identity", position = "dodge")+
+  #  ggtitle(bquote(~'Germany (SHARE)' ))+
+  xlab("Age") +ylab(" ")+
+  theme (plot.title = element_text(size = 10))+
+  # geom_bar(stat = "identity", position = "stack")+ 
+  #geom_errorbar(data= outgap.ci,
+  #              aes(x=Country, ymin=l, ymax=u, 
+  #                  color=factor(type, levels=c("Mortality","Disability"))),
+  #              width=0.5, alpha=0.5, size=1.2, show.legend = F, position=position_dodge(width=0.5))+
+  scale_fill_manual(values=alpha(c("darkred", "blue"),0.5))+
+  scale_color_manual(values=alpha(c("darkred", "blue"),0.7))+
+  #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
   
-  
-  
-  
-  # directories of each survey.
+  # ylim(-1.2, 1.7)+
+  geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
+  labs(fill = "Component")+
+  theme_minimal(base_size = 12) +
+  # facet_wrap(.~Country, ncol = 4)+
+  theme(legend.text=element_text(size=9),
+        legend.title=element_text(size=10),
+        axis.title =  element_text(size=12),title =  element_text(size=12),
+        legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+  facet_grid(type~age)+
+  coord_flip()
+
+
+
+
+library(ggalt)
+library(ggtext)
+library(extrafont)
+
+# making  a dumbbell to check
+dis_cron_bell<-dis_cron %>% 
+  pivot_wider(id_cols = c(age,country,type), names_from = sex, values_from = unhealthy)
+
+
+ggplot(dis_cron_bell %>%
+         arrange(woman) %>%
+         #  filter(!location%in%"Canada") %>% 
+         mutate(country=fct_reorder(country, woman,.desc = T)))+ 
+  geom_dumbbell(size=1, color="black",
+                aes(y = country, x=woman, xend=man, color=type),
+                size_x = 3.5, size_xend = 3.5, colour_x = '#B6407D', colour_xend = '#11718A') +
+  facet_grid(type~age)+
+  theme_clean()+
+  theme(axis.text.x = element_text( vjust = 0.3, hjust = 1, angle = 90))
+
+
+
+
+
+# directories of each survey.
 prev.dir.share<-here("Data","SHARE","Prevalence") 
 prev.dir.elsa<-here("Data","ELSA","Prevalence")
 prev.dir.lasi<-here("Data","LASI","Prevalence")
@@ -283,7 +283,7 @@ prev.all$type = swr(prev.all$type)
 fig_prev_all<-
   
   ggplot(prev.all,
-                     aes(age, country, group=country, fill=unhealthy))+
+         aes(age, country, group=country, fill=unhealthy))+
   geom_raster(interpolate = F) +
   # geom_tile (color="white") +
   theme_clean(base_size = 24)+
@@ -320,10 +320,12 @@ colnames(decomp.cfle)<-c("Country","GAP_CFLE","GAP_LE", "Mort.Cron","Chronic")
 decomp.all<-full_join(decomp.cfle,decomp.dfle) %>% 
   mutate(GAP.dfle= cut(GAP_DFLE, breaks=c(-0.4, 0, 1,3,5),include.lowest = TRUE),
          GAP.dfle=factor(GAP.dfle, levels=c("[-0.4,0]", "(0,1]", "(1,3]", "(3,5]"), 
-                         labels=c("< 0", "0 - 1", "1 - 3", "3 - 5")),
-         GAP.cfle= cut(GAP_CFLE, breaks=c(-2.4, -1.5,0,1,1.7),include.lowest = TRUE),
-         GAP.cfle=factor(GAP.cfle, levels=c("[-2.4,-1.5]", "(-1.5,0]", "(0,1]","(1,1.7]"), 
-                         labels=c("< -1.5", "-1.5- 0", "0 - 1","1-1.7")))
+                         labels=c("< 0", "0 - 1", "1 - 3", "3 - 5")))
+
+decomp.cron<-full_join(decomp.cfle,decomp.dfle) %>% 
+  mutate(GAP.cfle= cut(GAP_CFLE, breaks=c(-2.4, -1,0, 1, 1.7),include.lowest = TRUE),
+         GAP.cfle=factor(GAP.cfle, levels=c("[-2.4,-1]", "(-1,0]", "(0,1]","(1,1.7]"), 
+                         labels=c("< -1", "-1 - 0", "0 - 1","1-1.7")))
 
 
 
@@ -331,7 +333,7 @@ X11()
 
 # %>% 
 #  mutate(Welf.State=case_when(Country%in%c("Denmark","Finland","Norway","Sweden")~ "Scandinavian",
- #                             Country%in%c("England","US")~"Anglo-Saxon",
+#                             Country%in%c("England","US")~"Anglo-Saxon",
 #                              Country%in%c("Germany","France","Austria","Belgium",
 #                                        "Luxembourg")~ "Bismarckian",
 #                              Country%in%c("Greece","Italy","Portugal","Spain")~ "Southern",
@@ -361,79 +363,201 @@ decomp.all.u<-decomp.all %>%
   arrange(Country,GAP_DFLE) %>% 
   slice(which.max(GAP_DFLE)) 
 
+decomp.all.m<-decomp.all %>% 
+  arrange(Country,GAP_DFLE) %>% 
+  slice(which.min(Mortality))
+
+decomp.all.d<-decomp.all %>% 
+  arrange(Country,GAP_DFLE) %>% 
+  slice(which.max(Disability))
+
+d.figs<-rbind(decomp.all.l, decomp.all.u, decomp.all.m, decomp.all.d)
+
+#chronic
+
+decomp.cron.l<-decomp.cron %>% 
+  arrange(Country,GAP_CFLE) %>% 
+  slice(which.min(GAP_CFLE))
+
+
+decomp.cron.u<-decomp.cron %>% 
+  arrange(Country,GAP_CFLE) %>% 
+  slice(which.max(GAP_CFLE)) 
+
+decomp.cron.m<-decomp.cron %>% 
+  filter(GAP.cfle%in%c("1-1.7")) %>% 
+  arrange(Country,GAP_CFLE) %>% 
+  slice(which.max(Mortality))
+
+decomp.cron.d<-decomp.cron %>% 
+  arrange(Country,GAP_CFLE) %>% 
+  slice(which.max(Mort.Cron))
+
+c.figs<-rbind(decomp.cron.l, decomp.cron.u, decomp.cron.m, decomp.cron.d)
+c.figs
+
 X11()
 
 fig4<-ggplot(decomp.all, aes(Mortality,Disability, group=GAP.dfle, 
-                       color=GAP.dfle,fill=GAP.dfle))+
-   geom_point(size=4)+
- #   scale_color_brewer(palette="Spectral")+
- 
-# scale_color_brewer(palette="PuOr")+
- # scale_color_manual(values=pal)+
-    geom_mark_ellipse(data=decomp.all %>% 
-                        filter(GAP.dfle%in%c("< 0","3 - 5")),
-                      aes(fill = GAP.dfle)) +
-  scale_y_reverse()+
-  scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
-  scale_y_continuous(limits = c(-3, 1)) +
-  scale_color_brewer(palette="RdBu", direction = -1)+
-  scale_fill_brewer(palette="RdBu", direction = -1)+
-  theme_clean(base_size =24)+
-  theme(legend.position = "bottom", 
-        legend.background = element_rect(color = NA),
-        legend.title  = element_text(size=18),
-        legend.text = element_text(size=20),
-        panel.border = element_blank(),
-        plot.background = element_blank())+
-  ggrepel::geom_text_repel(data=decomp.all.l, 
-             aes(Mortality,Disability, label=Country),
-             box.padding = 0.9, show.legend=FALSE,size = 7)+
-  ggrepel:: geom_text_repel(data=decomp.all.u, 
-             aes(Mortality,Disability, label=Country),
-             box.padding = 0.8, show.legend=FALSE,size = 7)
-  
-
-pdf(here("Manuscript","Figures","fig4.1.pdf"), width = 10, height=10)
-fig4
-dev.off()
-
-
-# same figure for chronic
-
-fig4.2<-ggplot(decomp.all, aes(Mort.Cron,Chronic, group=GAP.cfle, 
-                             color=GAP.cfle,fill=GAP.cfle))+
+                             color=GAP.dfle,fill=GAP.dfle))+
   geom_point(size=4)+
   #   scale_color_brewer(palette="Spectral")+
   
   # scale_color_brewer(palette="PuOr")+
   # scale_color_manual(values=pal)+
   geom_mark_ellipse(data=decomp.all %>% 
-                      filter(GAP.cfle%in%c("< -1.5","0 - 1.7")),
-                    aes(fill = GAP.cfle)) +
+                      filter(GAP.dfle%in%c("< 0","3 - 5")),
+                    aes(fill = GAP.dfle)) +
+  geom_segment( data=decomp.all.l, aes(x=0,xend=Mortality,y=Disability,yend=Disability), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.all.u, aes(x=0,xend=Mortality,y=Disability,yend=Disability), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.all.m, aes(x=0,xend=Mortality,y=Disability,yend=Disability), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.all.d, aes(x=0,xend=Mortality,y=Disability,yend=Disability), linetype="dotted", 
+                color = "black", size=1)+
+  
+  
+  geom_segment( data=decomp.all.l, aes(x=Mortality,xend=Mortality,y=Disability,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.all.u, aes(x=Mortality,xend=Mortality,y=Disability,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.all.m, aes(x=Mortality,xend=Mortality,y=Disability,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.all.d, aes(x=Mortality,xend=Mortality,y=Disability,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
   scale_y_reverse()+
- # scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
-#  scale_y_continuous(limits = c(-3, 1)) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
+  scale_y_continuous(limits = c(-3, 1)) +
   scale_color_brewer(palette="RdBu", direction = -1)+
   scale_fill_brewer(palette="RdBu", direction = -1)+
-  theme_clean(base_size =24)+
+  theme_classic(base_size =24)+
   theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
         legend.title  = element_text(size=18),
         legend.text = element_text(size=20),
         panel.border = element_blank(),
-        plot.background = element_blank())+
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  
   ggrepel::geom_text_repel(data=decomp.all.l, 
-                           aes(Mort.Cron,Chronic, label=Country),
-                           box.padding = 0.9, show.legend=FALSE,size = 7)+
+                           aes(Mortality,Disability, label=Country),
+                           box.padding = 0.8, show.legend=FALSE,size = 7,
+                           nudge_x = 0.8,
+                           nudge_y = 0.3)+
+  
+  
   ggrepel:: geom_text_repel(data=decomp.all.u, 
-                            aes(Mort.Cron,Chronic, label=Country),
-                            box.padding = 0.8, show.legend=FALSE,size = 7)
+                            aes(Mortality,Disability, label=Country),
+                            box.padding = 0.8, show.legend=FALSE,size = 7,
+                            nudge_x = 0.8,
+                            nudge_y = 0.3)+
+  ggrepel:: geom_text_repel(data=decomp.all.m, 
+                            aes(Mortality,Disability, label=Country),
+                            box.padding = 0.8, show.legend=FALSE,size = 7,
+                            nudge_x = 0.8,
+                            nudge_y = 0.3)+
+  ggrepel:: geom_text_repel(data=decomp.all.d, 
+                            aes(Mortality,Disability, label=Country),
+                            box.padding = 0.8, show.legend=FALSE,size = 7,
+                            nudge_x = 0.8,
+                            nudge_y = 0.3)
+
 
 
 pdf(here("Manuscript","Figures","fig4.2.pdf"), width = 10, height=10)
-fig4.2
+fig4
 dev.off()
 
+X11()
+
+# same figure for chronic
+
+fig4.5<-ggplot(decomp.cron, aes(Mort.Cron,Chronic, group=GAP.cfle, 
+                                color=GAP.cfle,fill=GAP.cfle))+
+  geom_point(size=4)+
+  #   scale_color_brewer(palette="Spectral")+
+  
+  # scale_color_brewer(palette="PuOr")+
+  # scale_color_manual(values=pal)+
+  geom_mark_ellipse(data=decomp.cron %>% 
+                      filter(GAP.cfle%in%c("< -1","1-1.7")),
+                    aes(fill = GAP.cfle)) +
+  geom_segment( data=decomp.cron.l, aes(x=0,xend=Mort.Cron,y=Chronic,yend=Chronic), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.cron.u, aes(x=0,xend=Mort.Cron,y=Chronic,yend=Chronic), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.cron.m, aes(x=0,xend=Mort.Cron,y=Chronic,yend=Chronic), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.cron.d, aes(x=0,xend=Mort.Cron,y=Chronic,yend=Chronic), linetype="dotted", 
+                color = "black", size=1)+
+  
+  
+  geom_segment( data=decomp.cron.l, aes(x=Mort.Cron,xend=Mort.Cron,y=Chronic,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.cron.u, aes(x=Mort.Cron,xend=Mort.Cron,y=Chronic,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.cron.m, aes(x=Mort.Cron,xend=Mort.Cron,y=Chronic,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
+  
+  geom_segment( data=decomp.cron.d, aes(x=Mort.Cron,xend=Mort.Cron,y=Chronic,yend=-Inf), linetype="dotted", 
+                color = "black", size=1)+
+  #  scale_y_reverse()+
+  #scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
+  scale_y_continuous(limits = c(-4, 1.7)) +
+  scale_color_brewer(palette="RdBu", direction = -1)+
+  scale_fill_brewer(palette="RdBu", direction = -1)+
+  theme_classic(base_size =24)+
+  theme(legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=20),
+        panel.border = element_blank(),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  
+  ggrepel::geom_text_repel(data=decomp.cron.l, 
+                           aes(Mort.Cron,Chronic, label=Country),
+                           box.padding = 0.8, show.legend=FALSE,size = 7,
+                           nudge_x = 1,
+                           nudge_y = 0.9)+
+  
+  
+  ggrepel:: geom_text_repel(data=decomp.cron.u, 
+                            aes(Mort.Cron,Chronic, label=Country),
+                            box.padding = 0.8, show.legend=FALSE,size = 7,
+                            nudge_x = 0.8,
+                            nudge_y = 0.4)+
+  ggrepel:: geom_text_repel(data=decomp.cron.m, 
+                            aes(Mort.Cron,Chronic, label=Country),
+                            box.padding = 0.8, show.legend=FALSE,size = 7,
+                            nudge_x = 0.8,
+                            nudge_y = 0.3)+
+  ggrepel:: geom_text_repel(data=decomp.cron.d, 
+                            aes(Mort.Cron,Chronic, label=Country),
+                            box.padding = 0.8, show.legend=FALSE,size = 7,
+                            nudge_x = 0.8,
+                            nudge_y = 0.4)+
+  xlab("Mortality")
+
+
+pdf(here("Manuscript","Figures","fig4.5.pdf"), width = 10, height=10)
+fig4.5
+dev.off()
+X11()
 
 
 #library(ggalt)
@@ -451,7 +575,7 @@ ggplot(decomp.all%>%
   geom_dumbbell(size=1, color="black",
                 aes(y = Country, x=Mortality, xend=Disability, color=GAP.dfle),
                 size_x = 3.5, size_xend = 3.5, colour_x = '#B6407D', colour_xend = '#11718A') +
- # facet_grid(type~age)+
+  # facet_grid(type~age)+
   theme_clean()+
   theme(axis.text.x = element_text( vjust = 0.3, hjust = 1, angle = 90))
 
@@ -466,7 +590,7 @@ decomp.all<-decomp.all %>%
 
 
 View(decomp.all)
-  
+
 
 font_add_google("Fira Sans", "firasans")
 showtext_auto()
