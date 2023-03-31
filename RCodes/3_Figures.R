@@ -612,3 +612,32 @@ colors <- thematic::okabe_ito(8)[-6]
 colors
 
 
+# doing a rank grphs
+# first ranking according to different metrics
+
+
+decomp.rankings.le <- decomp.all %>% 
+  #group_by(Country) %>% 
+  arrange((GAP_LE), Country) %>% 
+  mutate(ranking.le = row_number()) %>% 
+  as.data.frame()
+
+decomp.rankings.dfle <- decomp.rankings.le  %>% 
+  #group_by(Country) %>% 
+  arrange((GAP_DFLE), Country) %>% 
+  mutate(ranking.dfle = row_number()) %>% 
+  as.data.frame()
+
+
+decomp.rankings.dis <- decomp.rankings.dfle  %>% 
+  #group_by(Country) %>% 
+  arrange(desc(Disability), Country) %>% 
+  mutate(ranking.disability = row_number()) %>% 
+  as.data.frame()
+
+# then plot basic bump chart
+ggplot(data = df.rankings, aes(x = day, y = ranking, group = country)) +
+  geom_line(aes(color = country, alpha = 1), size = 2) +
+  geom_point(aes(color = country, alpha = 1), size = 4) +
+  scale_y_reverse(breaks = 1:nrow(df.rankings))
+
