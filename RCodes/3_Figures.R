@@ -316,13 +316,14 @@ decomp.cfle<-fread(here("Manuscript","Data", "decomp_60_dfle_chronic.csv")) %>%
 
 colnames(decomp.cfle)<-c("Country","GAP_CFLE","GAP_LE", "Mort.Cron","Chronic")
 
+
 decomp.all<-full_join(decomp.cfle,decomp.dfle) %>% 
   mutate(GAP.dfle= cut(GAP_DFLE, breaks=c(-0.4, 0, 1,3,5),include.lowest = TRUE),
          GAP.dfle=factor(GAP.dfle, levels=c("[-0.4,0]", "(0,1]", "(1,3]", "(3,5]"), 
                          labels=c("< 0", "0 - 1", "1 - 3", "3 - 5")),
-         GAP.cfle= cut(GAP_CFLE, breaks=c(-2.4, -1.5,0,1.7),include.lowest = TRUE),
-         GAP.cfle=factor(GAP.cfle, levels=c("[-2.4,-1.5]", "(-1.5,0]", "(0,1.7]"), 
-                         labels=c("< -1.5", "-1.5- 0", "0 - 1.5")))
+         GAP.cfle= cut(GAP_CFLE, breaks=c(-2.4, -1.5,0,1,1.7),include.lowest = TRUE),
+         GAP.cfle=factor(GAP.cfle, levels=c("[-2.4,-1.5]", "(-1.5,0]", "(0,1]","(1,1.7]"), 
+                         labels=c("< -1.5", "-1.5- 0", "0 - 1","1-1.7")))
 
 
 
@@ -399,19 +400,19 @@ dev.off()
 
 # same figure for chronic
 
-fig4.2<-ggplot(decomp.all, aes(Mort.Cron,Chronic, group=GAP.dfle, 
-                             color=GAP.dfle,fill=GAP.dfle))+
+fig4.2<-ggplot(decomp.all, aes(Mort.Cron,Chronic, group=GAP.cfle, 
+                             color=GAP.cfle,fill=GAP.cfle))+
   geom_point(size=4)+
   #   scale_color_brewer(palette="Spectral")+
   
   # scale_color_brewer(palette="PuOr")+
   # scale_color_manual(values=pal)+
   geom_mark_ellipse(data=decomp.all %>% 
-                      filter(GAP.dfle%in%c("< 0","3 - 5")),
-                    aes(fill = GAP.dfle)) +
+                      filter(GAP.cfle%in%c("< -1.5","0 - 1.7")),
+                    aes(fill = GAP.cfle)) +
   scale_y_reverse()+
-  scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
-  scale_y_continuous(limits = c(-3, 1)) +
+ # scale_x_continuous(expand = c(0, 0), limits = c(0, 5.7)) +
+#  scale_y_continuous(limits = c(-3, 1)) +
   scale_color_brewer(palette="RdBu", direction = -1)+
   scale_fill_brewer(palette="RdBu", direction = -1)+
   theme_clean(base_size =24)+
@@ -422,10 +423,10 @@ fig4.2<-ggplot(decomp.all, aes(Mort.Cron,Chronic, group=GAP.dfle,
         panel.border = element_blank(),
         plot.background = element_blank())+
   ggrepel::geom_text_repel(data=decomp.all.l, 
-                           aes(Mortality,Disability, label=Country),
+                           aes(Mort.Cron,Chronic, label=Country),
                            box.padding = 0.9, show.legend=FALSE,size = 7)+
   ggrepel:: geom_text_repel(data=decomp.all.u, 
-                            aes(Mortality,Disability, label=Country),
+                            aes(Mort.Cron,Chronic, label=Country),
                             box.padding = 0.8, show.legend=FALSE,size = 7)
 
 
