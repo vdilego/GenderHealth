@@ -30,13 +30,19 @@ library(ggthemes)
 library(ggrepel)
 library(Hmisc)
 library(devtools)
-library(ggthemes)
 library(colorspace)
 library(cowplot)
 library(grid)
 library(DemoDecomp) 
 library(gridExtra)
 library(forcats)
+library(ggalt)
+library(ggtext)
+library(extrafont)
+library(ggforce)
+library(ggfortify)
+library(showtext)
+library(ggbump)
 
 
 # Loading useful functions into environment
@@ -56,6 +62,7 @@ figs.app.folder <- here("Appendix","Figures")
 # First setting the folders
 
 dis.folder <- here("Data","All_Prevalence") 
+
 
 
 # reading disability data for all countries at the same time
@@ -146,7 +153,7 @@ fig_selected
 dev.off()
 
 
-ggplot() +
+bar_allconditions<-ggplot() +
   geom_bar(data= dis_cron %>%
              arrange(unhealthy) %>% 
              group_by(type) %>% 
@@ -177,14 +184,14 @@ ggplot() +
         legend.background = element_rect(color = NA),
         axis.text.x = element_text( vjust = 0.3, hjust = 1))+
   facet_grid(type~age)+
+  xlab("Country")+
   coord_flip()
 
+pdf(here(figs.app.folder,"fig2.app.pdf"), width = 17, height=10)
+bar_allconditions
+dev.off()
 
 
-
-library(ggalt)
-library(ggtext)
-library(extrafont)
 
 # making  a dumbbell to check
 dis_cron_bell<-dis_cron %>% 
@@ -201,8 +208,6 @@ ggplot(dis_cron_bell %>%
   facet_grid(type~age)+
   theme_clean()+
   theme(axis.text.x = element_text( vjust = 0.3, hjust = 1, angle = 90))
-
-
 
 
 
@@ -252,7 +257,7 @@ prev.all<-rbind(prev.share.cntry,prev.share, prev.elsa,prev.lasi,prev.charls,pre
 
 # plots with all
 
-ggplot()+
+sex.disease<-ggplot()+
   
   geom_line(data=prev.all,aes(age, unhealthy, group=country,color=gender),size=1, color="grey90")+
   # geom_line(data=prev.all, aes(age, unhealthy, group=gender,color=gender))+
@@ -265,6 +270,11 @@ ggplot()+
   geom_line(data=prev.all,aes(age, unhealthy, group=country,color=gender),size=1)+
   #scale_color_manual(values = c("brown","darkblue"))+
   scale_color_manual(values = c('#882255','#009988')) 
+
+pdf(here(figs.app.folder,"fig3.app.pdf"), width = 17, height=10)
+sex.disease
+dev.off()
+
 
 
 # Helper function for string wrapping because names are too large in the facets
@@ -348,10 +358,7 @@ X11()
 #ggplot(decomp.all, aes(GAP_CFLE,GAP_DFLE, group=Country, color=Welf.State))+
 #  geom_point()
 
-library(ggpubr)
-library(ggforce)
-library("ggfortify")
-library(showtext)
+
 
 # select labels: high and low gap
 decomp.all.l<-decomp.all %>% 
@@ -560,10 +567,6 @@ dev.off()
 X11()
 
 
-#library(ggalt)
-library(ggtext)
-library(extrafont)
-
 # making  a dumbbell to check
 
 ggplot(decomp.all, aes(GAP.dfle,Country, group=Country,color=GAP.dfle))
@@ -586,31 +589,6 @@ ggplot(decomp.all%>%
 decomp.all<-decomp.all %>% 
   mutate(cor.dfle=cor.test(GAP_LE, GAP_DFLE, method = "pearson", conf.level = 0.95)$estimate,
          cor.dfle.p=cor.test(GAP_LE, GAP_DFLE, method = "pearson", conf.level = 0.95)$p.value)
-
-
-
-View(decomp.all)
-
-
-font_add_google("Fira Sans", "firasans")
-showtext_auto()
-
-theme_customs <- theme(
-  text = element_text(family = 'firasans', size = 16),
-  plot.title.position = 'plot',
-  plot.title = element_text(
-    face = 'bold', 
-    colour = thematic::okabe_ito(8)[6],
-    margin = margin(t = 2, r = 0, b = 7, l = 0, unit = "mm")
-  ),
-)
-
-theme_set(theme_minimal() + theme_customs)
-
-pal<-c("#ab864a", "#5d7dc3", "#0d3173", "#5c689a", "#8c8e9a", "#37345f") 
-colors <- thematic::okabe_ito(8)[-6]
-colors
-
 
 # doing a rank grphs
 # first ranking according to different metrics
@@ -641,110 +619,133 @@ decomp.rankings.cron <- decomp.rankings.dis  %>%
   mutate(ranking.chronic = row_number()) %>% 
   as.data.frame()
 
-rank.values<-decomp.rankings.cron  %>% 
-  select(1, 12:15) %>% 
-  pivot_longer(2:5,names_to ="Type",values_to = "Rank" )
+decomp.rankings.cron.gap <- decomp.rankings.cron %>% 
+  #group_by(Country) %>% 
+  arrange(desc(GAP_CFLE), Country) %>% 
+  mutate(ranking.cfle = row_number()) %>% 
+  as.data.frame()
 
-rank.values$tag<-factor(rank.values$Type, levels = c("ranking.chronic","ranking.dfle", "ranking.disability", "ranking.le"),
-                        labels=c("CHRONIC","GAP DFLE","DISABILITY","GAP LE"))
+rank.values<-decomp.rankings.cron.gap  %>% 
+  select(1, 12:16) %>% 
+  pivot_longer(2:6,names_to ="Type",values_to = "Rank" )
 
-library(ggbump)
+rank.values$tag<-factor(rank.values$Type, 
+                        levels = c("ranking.cfle","ranking.chronic","ranking.dfle", 
+                                   "ranking.disability", "ranking.le"),
+                        labels=c("GAP CFLE","CHRONIC","GAP DFLE","DISABILITY","GAP LE"))
+
+
+rank.values<-rank.values %>% 
+  mutate(tag=fct_relevel(tag,c("GAP DFLE","DISABILITY","GAP CFLE","CHRONIC","GAP LE"))) %>%
+  arrange(tag)
+
+
 # then plot basic bump chart
 X11()
 
 r.bump<-ggplot(rank.values,
        aes(x = tag, y = Rank, color = Country, group=Country)) +
-  geom_bump(smooth = 15, size = 2, alpha = 0.2, color="grey70")+
-  scale_y_reverse()
+  geom_bump(smooth = 15, size = 2, alpha = 0.2, color="grey70")
 
 
-r.bump + geom_bump(data= rank.values %>% 
-                     filter(Country%in%c("Portugal","Korea","Denmark","US", "China")),
-       aes(x = tag, y = Rank, color = Country, group=Country),
-       smooth = 15, size = 2, inherit.aes = F)+
+rank_dis<-r.bump + 
+    geom_bump(data= rank.values%>% 
+                filter(Country%in%c("Portugal","Korea","Denmark","US", "India")) ,
+              aes(x = tag, y = Rank, color = Country, group=Country),
+              smooth = 15, size = 2, inherit.aes = F)+
+  
+  geom_point(data= rank.values,
+             aes(x = tag, y = Rank),
+             size = 5,  alpha = 0.5,color="grey70") +
   geom_point(data= rank.values %>% 
-               filter(Country%in%c("Portugal","Korea","Denmark","US", "China")),
+               filter(Country%in%c("Portugal","Korea","Denmark","US", "India")),
              aes(x = tag, y = Rank),
              size = 5) +
-  geom_segment(data =rank.values %>% 
-                 filter(Country%in%c("Portugal","Korea","Denmark","US", "China")),
+  geom_segment(data =rank.values,
                aes(x = tag , xend = tag , y = Rank, yend = Rank),
-               size = 2,
+               size = 5,  alpha = 0.5,color="grey70",
                lineend = "round")+
   
-  geom_text(data = rank.values %>% filter(Country%in%c("Portugal","Korea","Denmark","US", "China")),
+  geom_segment(data =rank.values %>% 
+                 filter(Country%in%c("Portugal","Korea","Denmark","US", "India")),
+               aes(x = tag , xend = tag , y = Rank, yend = Rank),
+               size = 2.5,alpha = 0.5,
+               lineend = "round")+
+  
+  geom_text(data = rank.values %>% filter(!Country%in%c("Portugal","Korea","Denmark","US", "India")),
             aes(label = Country, x = tag),
-          #  color = "white",
+            size = 3,  alpha = 0.5,color="grey70",
+            #  color = "white",
             nudge_y = .43,
             nudge_x = -.05,
             size = 3.5,
             fontface = 2,
             hjust = 0) +
-  scale_color_manual(values =c("#CA0020", "#F4A582", "#F7F7F7", "#92C5DE", "#0571B0","grey90"))
+  
+  geom_text(data = rank.values %>% filter(Country%in%c("Portugal","Korea","Denmark","US", "India")),
+            aes(label = Country, x = tag),
+          #  color = "white",
+            nudge_y = .5,
+            nudge_x = -.07,
+            size = 5,
+            fontface = 2,
+            hjust = 0) +
+  scale_color_manual(values=c("#ab864a","#5d7dc3","#0d3173",
+                              "#ba1e68","#6ba772","black"))+
+# scale_color_manual(values =c("#CA0020", "#F4A582", "#F7F7F7", "#92C5DE", "#0571B0","grey90"))+
+  scale_y_reverse(breaks = 1:nrow(rank.values))+
+  labs(  y = "Rank")+
+  labs(  x = "")+
+  my_theme()+
+  theme(legend.position = "none")
+  
+
+rank_dis
+
+pdf(here("Manuscript","Figures","fig4.pdf"), width = 15, height=10)
+rank_dis
+dev.off()
+
+
+
 
 
 # basic version
 
-ggplot(data = rank.values, aes(x = tag, y = Rank, group = Country)) +
-  geom_line(aes(color = Country, alpha = 1), size = 2) +
-  geom_point(aes(color = Country, alpha = 1), size = 4) +
-  scale_y_reverse(breaks = 1:nrow(rank.values))
+#ggplot(data = rank.values, aes(x = tag, y = Rank, group = Country)) +
+#  geom_line(aes(color = Country, alpha = 1), size = 2) +
+#  geom_point(aes(color = Country, alpha = 1), size = 4) +
+#  scale_y_reverse(breaks = 1:nrow(rank.values))##
 
-my_theme <- function() {
-  # Colors
-  color.background = "white"
-  color.text = "#22211d"
-  # Begin construction of chart
-  theme_bw(base_size=15) +
-    # Format background colors
-    theme(panel.background = element_rect(fill=color.background, color=color.background)) +
-    theme(plot.background  = element_rect(fill=color.background, color=color.background)) +
-    theme(panel.border     = element_rect(color=color.background)) +
-    theme(strip.background = element_rect(fill=color.background, color=color.background)) +
-    # Format the grid
-    theme(panel.grid.major.y = element_blank()) +
-    theme(panel.grid.minor.y = element_blank()) +
-    theme(axis.ticks       = element_blank()) +
-    # Format the legend
-    theme(legend.position = "none") +
-    # Format title and axis labels
-    theme(plot.title       = element_text(color=color.text, size=20, face = "bold")) +
-    theme(axis.title.x     = element_text(size=18, color="black", face = "bold")) +
-    theme(axis.title.y     = element_text(size=18, color="black", face = "bold", vjust=1.25)) +
-    theme(axis.text.x      = element_text(size=18, vjust=0.5, hjust=0.5, color = color.text)) +
-    theme(axis.text.y      = element_text(size=18, color = color.text)) +
-    theme(strip.text       = element_text(face = "bold")) +
-    # Plot margins
-    theme(plot.margin = unit(c(0.35, 0.2, 0.3, 0.35), "cm"))
-}
 
-rank.values <- rank.values %>%
-  filter(tag%in%c("GAP DFLE","DISABILITY")) %>% 
-  mutate(flag = ifelse(Country %in%c("Portugal","Korea","Denmark","US", "China"), TRUE, FALSE),
-         country_col = if_else(flag == TRUE, Country, "zzz"))
 
-ggplot(data = rank.values, aes(x = tag, y = Rank, group = Country)) +
-  geom_line(aes(color = country_col, alpha = 1), size = 3) +
-  geom_point(color = "#FFFFFF", size = 4) +
-  geom_point(aes(color = country_col, alpha = 1), size = 4) +
-  geom_point(color = "#FFFFFF", size = 1) +
-  scale_y_reverse(breaks = 1:nrow(rank.values))+
- # scale_x_continuous(breaks = 1:16, minor_breaks = 1:16, expand = c(.05, .05)) +
-  geom_text(data = rank.values %>% filter(tag == "GAP DFLE"),
-            aes(label = Country, x = 0.8) , fontface = "bold", color = "grey90", size = 6) +
-  geom_text(data = rank.values %>% filter(tag == "DISABILITY"),
-            aes(label = Country, x = 2.2) , fontface = "bold", color = "grey90", size = 6) +
-  
-  geom_text(data = rank.values %>% filter(tag == "GAP DFLE" & Country %in%c("Portugal","Korea","Denmark","US", "China")),
-            aes(label = Country, x = 0.8, color=Country) , fontface = "bold", size = 6) +
-  geom_text(data = rank.values %>% filter(tag == "DISABILITY" &Country %in%c("Portugal","Korea","Denmark","US", "China")),
-            aes(label = Country,  x = 2.2, color=Country) , fontface = "bold", size = 6) +
- # coord_cartesian(ylim = c(1,show.top.n)) + 
-  theme(legend.position = "none") +
-  labs(  y = "Rank")+
-  my_theme()+
-  
-  scale_color_manual(values = c("#CA0020", "#F4A582", "black", "#92C5DE", "#0571B0","grey90"))
+#rank.values <- rank.values %>%
+#  filter(tag%in%c("GAP DFLE","DISABILITY")) %>% 
+#  mutate(flag = ifelse(Country %in%c("Portugal","Korea","Denmark","US", "China"), TRUE, FALSE),
+#         country_col = if_else(flag == TRUE, Country, "zzz"))#
+#
+#ggplot(data = rank.values, aes(x = tag, y = Rank, group = Country)) +
+#  geom_line(aes(color = country_col, alpha = 1), size = 3) +
+#  geom_point(color = "#FFFFFF", size = 4) +
+#  geom_point(aes(color = country_col, alpha = 1), size = 4) +
+#  geom_point(color = "#FFFFFF", size = 1) +
+#  scale_y_reverse(breaks = 1:nrow(rank.values))+
+#  # scale_x_continuous(breaks = 1:16, minor_breaks = 1:16, expand = c(.05, .05)) +
+#  geom_text(data = rank.values %>% filter(tag == "GAP DFLE"),
+#            aes(label = Country, x = 0.8) , fontface = "bold", color = "grey90", size = 6) +
+#  geom_text(data = rank.values %>% filter(tag == "DISABILITY"),
+#            aes(label = Country, x = 2.2) , fontface = "bold", color = "grey90", size = 6) +
+#  
+#  geom_text(data = rank.values %>% filter(tag == "GAP DFLE" & Country %in%c("Portugal","Korea","Denmark","US", "China")),
+#            aes(label = Country, x = 0.8, color=Country) , fontface = "bold", size = 6) +
+#  geom_text(data = rank.values %>% filter(tag == "DISABILITY" &Country %in%c("Portugal","Korea","Denmark","US", "China")),
+#            aes(label = Country,  x = 2.2, color=Country) , fontface = "bold", size = 6) +
+#  # coord_cartesian(ylim = c(1,show.top.n)) + 
+#  theme(legend.position = "none") +
+#  labs(  y = "Rank")+
+#  my_theme()+
+#  
+#  scale_color_manual(values = c("#CA0020", "#F4A582", "black", "#92C5DE", "#0571B0","grey90"))
 
 
 #CA0020
