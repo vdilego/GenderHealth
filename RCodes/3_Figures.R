@@ -584,15 +584,10 @@ ggplot(decomp.all%>%
 
 
 
-#adding correlation
 
-decomp.all<-decomp.all %>% 
-  mutate(cor.dfle=cor.test(GAP_LE, GAP_DFLE, method = "pearson", conf.level = 0.95)$estimate,
-         cor.dfle.p=cor.test(GAP_LE, GAP_DFLE, method = "pearson", conf.level = 0.95)$p.value)
 
 # doing a rank grphs
 # first ranking according to different metrics
-
 
 decomp.rankings.le <- decomp.all %>% 
   #group_by(Country) %>% 
@@ -708,7 +703,17 @@ dev.off()
 
 
 
+# another figure that focuses on gender gap as inequality.
 
+decomp.gap <- decomp.all %>% 
+  select(1:3,6)
+
+
+decomp.long.gap<-decomp.gap %>% 
+ pivot_longer(2:4)
+
+
+ggplot(decomp.long.gap, aes(Country, value, group=name, color=name))+ geom_line()
 
 # basic version
 
