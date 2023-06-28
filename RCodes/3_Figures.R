@@ -704,16 +704,204 @@ dev.off()
 
 
 # another figure that focuses on gender gap as inequality.
+# take this figure out now keep only values
 
 decomp.gap <- decomp.all %>% 
-  select(1:3,6)
+  select(1:2,6)
 
 
 decomp.long.gap<-decomp.gap %>% 
- pivot_longer(2:4)
+ pivot_longer(2:3) %>% 
+separate_wider_delim(name, "_", names = c(NA, "GAP"))
 
 
-ggplot(decomp.long.gap, aes(Country, value, group=name, color=name))+ geom_line()
+
+#X11()
+
+#ggplot(decomp.long.gap %>% 
+#        filter(!GAP %in%"LE"), 
+         #mutate(Country=fct_reorder(Country, value,.desc = F)), 
+#       aes(x=Country, y=value,group=Country, fill=GAP)) + 
+  #geom_col(aes(fill = GAP), width = 0.7)+
+ # geom_col(position_dodge2(width = 0.9, preserve = "single"))+
+#  geom_bar(position='dodge2', stat='identity',  width = 0.9)+
+#  scale_fill_manual(values=c( '#8225BE', '#D4C443'))+
+#  coord_flip()+
+  #geom_hline(yintercept = 0, color="grey70")+
+  #geom_hline(yintercept = 4, color="grey70")+
+  #geom_hline(yintercept = 8, color="grey70")+
+#  theme_minimal(base_size = 18)
+
+
+
+# for the bar chart
+
+# now joining all decompositions for ages 60+
+
+decomp.dfle<-fread(here("Manuscript","Data", "decomp_60_dfle.csv")) %>% 
+  select(1,6:11)
+
+
+decomp.cfle<-fread(here("Manuscript","Data", "decomp_60_dfle_chronic.csv")) %>% 
+  select(1,6:11) 
+
+
+#first dfle
+
+outgap.ci.dfle <- decomp.dfle %>%  
+  select(c(1,4:7)) %>% 
+  pivot_longer(!c(Country),
+               names_sep  = "\\.",
+               names_to=c("type","ci"),
+               values_to = c("Contribution")) 
+
+
+outgap.ci.dfle <- outgap.ci.dfle%>%  
+  pivot_wider(  names_from = "ci",
+                values_from = "Contribution")
+
+
+outgap.long.dfle <- decomp.dfle %>%  
+  select(c(1,2:3))%>% 
+  pivot_longer(!c(Country),
+               names_to=c("type"),
+               values_to = c("Contribution" )) 
+
+
+decomp.long.gap.dfle<-decomp.long.gap %>% 
+  filter(GAP%in%"DFLE")
+
+
+decomp.dfle.all<-full_join(outgap.long.dfle,decomp.long.gap.dfle, by="Country" )
+
+X11()
+
+plot_all_sum60_dis<- ggplot() +
+  geom_bar(data= decomp.dfle.all %>%
+             #arrange(Contribution) %>% 
+             #group_by(type) %>% 
+             mutate(Country=fct_reorder(Country, value,.desc = T)),
+           aes(x=factor(Country, 
+                       levels = rev(levels(factor(Country)))), 
+               y=Contribution, fill=factor(type, levels=c("Mortality","Disability"))),
+           stat = "identity", position = ("dodge2"))+
+  #  ggtitle(bquote(~'Germany (SHARE)' ))+
+  xlab("Country") +ylab(" ")+
+  theme (plot.title = element_text(size = 10))+
+  # geom_bar(stat = "identity", position = "stack")+ 
+  geom_errorbar(data= outgap.ci.dfle,
+                aes(x=Country, ymin=l, ymax=u, 
+                    color=factor(type, levels=c("Mortality","Disability"))),
+                width=0.5, alpha=0.5, size=1.2, show.legend = F, position=position_dodge(width=0.9))+
+  scale_fill_manual(values=c( '#D4C443','#8225BE'))+
+  scale_color_manual(values=c('#D4C443','#8225BE'))+
+  geom_text(data = decomp.long.gap %>% 
+              filter(GAP%in%"DFLE"), aes(Country, value, label = round(value,2)),
+              position=position_dodge(width=0.9),hjust = -1,
+            size=5, color="grey20") +
+  #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
+  
+  # ylim(-1.2, 1.7)+
+  geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.7)+
+  labs(fill = "Component")+
+  theme_minimal(base_size = 25) +
+  # facet_wrap(.~Country, ncol = 4)+
+  theme(legend.text=element_text(size=18),
+        legend.title=element_text(size=18),
+        axis.title =  element_text(size=18),title =  element_text(size=18),
+        legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+coord_flip()
+
+#scale_fill_manual(values=c('#2596BE', '#8225BE', '#D4C443'))
+plot_all_sum60_dis
+  
+x11()
+
+# now CFLE
+
+
+
+outgap.ci.cfle <- decomp.cfle %>%  
+  select(c(1,4:7)) %>% 
+  pivot_longer(!c(Country),
+               names_sep  = "\\.",
+               names_to=c("type","ci"),
+               values_to = c("Contribution")) 
+
+
+outgap.ci.cfle <- outgap.ci.cfle%>%  
+  pivot_wider(  names_from = "ci",
+                values_from = "Contribution")
+
+
+outgap.long.cfle <- decomp.cfle %>%  
+  select(c(1,2:3))%>% 
+  pivot_longer(!c(Country),
+               names_to=c("type"),
+               values_to = c("Contribution" )) 
+
+
+decomp.long.gap.cfle<-decomp.long.gap %>% 
+  filter(GAP%in%"CFLE")
+
+
+decomp.cfle.all<-full_join(outgap.long.cfle,decomp.long.gap.cfle, by="Country" )
+
+
+
+X11()
+
+plot_all_sum60_cron<- ggplot() +
+  geom_bar(data= decomp.cfle.all %>%
+           #arrange(Contribution) %>% 
+           #group_by(type) %>% 
+           mutate(Country=fct_reorder(Country, value,.desc = T)),
+           aes(x=factor(Country, 
+                        levels = rev(levels(factor(Country)))), 
+               y=Contribution, fill=factor(type, levels=c("Mortality","Chronic"))),
+           stat = "identity", position = "dodge2")+
+  #  ggtitle(bquote(~'Germany (SHARE)' ))+
+  xlab("") +ylab(" ")+
+  theme (plot.title = element_text(size = 10))+
+  # geom_bar(stat = "identity", position = "stack")+ 
+  
+  geom_errorbar(data= outgap.ci.cfle,
+                aes(x=Country, ymin=l, ymax=u, 
+                    color=factor(type, levels=c("Mortality","Chronic"))),
+                width=0.5, alpha=0.5, size=1.2, show.legend = F, position=position_dodge(width=0.9))+
+  
+  scale_fill_manual(values=c( '#D4C443','#2596BE'))+
+  scale_color_manual(values=c('#D4C443','#2596BE'))+
+  geom_text(data = decomp.long.gap %>% 
+              filter(GAP%in%"CFLE"), aes(Country, value, label = round(value,2)),
+            position=position_dodge(width=0.9),hjust = -1.2,
+            size=5, color="grey20") +
+  #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
+  
+  # ylim(-1.2, 1.7)+
+  geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
+  labs(fill = "Component")+
+  theme_minimal(base_size = 25) +
+  # facet_wrap(.~Country, ncol = 4)+
+  theme(legend.text=element_text(size=18),
+        legend.title=element_text(size=18),
+        axis.title =  element_text(size=18),title =  element_text(size=18),
+        legend.position = "bottom", 
+        legend.background = element_rect(color = NA),
+        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+coord_flip()
+
+
+plot_all_sum60_cron
+
+
+library(ggpubr)
+ 
+ggarrange(plot_all_sum60_dis,plot_all_sum60_cron)
+
+# geom_area(alpha=0.6 , size=.5, colour="white") +
 
 # basic version
 
