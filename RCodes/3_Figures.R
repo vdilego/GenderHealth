@@ -797,21 +797,22 @@ plot_all_sum60_dis<- ggplot() +
   scale_color_manual(values=c('#D4C443','#8225BE'))+
   geom_text(data = decomp.long.gap %>% 
               filter(GAP%in%"DFLE"), aes(Country, value, label = round(value,2)),
-              position=position_dodge(width=0.9),hjust = -1,
-            size=5, color="grey20") +
+            #  position=position_dodge(width=0.9),hjust = -1,
+            size=7, color="grey20") +
   #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
   
   # ylim(-1.2, 1.7)+
   geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.7)+
   labs(fill = "Component")+
-  theme_minimal(base_size = 25) +
-  # facet_wrap(.~Country, ncol = 4)+
-  theme(legend.text=element_text(size=18),
-        legend.title=element_text(size=18),
-        axis.title =  element_text(size=18),title =  element_text(size=18),
-        legend.position = "bottom", 
+  theme_classic(base_size =24)+
+  theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
-        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=20),
+        panel.border = element_blank(),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
 coord_flip()
 
 #scale_fill_manual(values=c('#2596BE', '#8225BE', '#D4C443'))
@@ -876,30 +877,43 @@ plot_all_sum60_cron<- ggplot() +
   scale_color_manual(values=c('#D4C443','#2596BE'))+
   geom_text(data = decomp.long.gap %>% 
               filter(GAP%in%"CFLE"), aes(Country, value, label = round(value,2)),
-            position=position_dodge(width=0.9),hjust = -1.2,
-            size=5, color="grey20") +
+           # position=position_dodge(width=0.9),hjust = -1.2,
+            size=7, color="grey20") +
   #scale_fill_manual(values=alpha(c( "#A50026", "#4575B4")))+
   
   # ylim(-1.2, 1.7)+
   geom_hline(yintercept=0, linetype="dashed",  color = "black", size=0.5)+
   labs(fill = "Component")+
-  theme_minimal(base_size = 25) +
-  # facet_wrap(.~Country, ncol = 4)+
-  theme(legend.text=element_text(size=18),
-        legend.title=element_text(size=18),
-        axis.title =  element_text(size=18),title =  element_text(size=18),
-        legend.position = "bottom", 
+#  theme_minimal(base_size = 25) +
+#  # facet_wrap(.~Country, ncol = 4)+
+#  theme(legend.text=element_text(size=18),
+#        legend.title=element_text(size=18),
+#        axis.title =  element_text(size=18),title =  element_text(size=18),
+#        legend.position = "bottom", 
+#        legend.background = element_rect(color = NA),
+#        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
+#coord_flip()
+  theme_classic(base_size =24)+
+  theme(legend.position = "bottom", 
         legend.background = element_rect(color = NA),
-        axis.text.x = element_text( vjust = 0.3, hjust = 1))+
-coord_flip()
-
+        legend.title  = element_text(size=18),
+        legend.text = element_text(size=20),
+        panel.border = element_blank(),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  coord_flip()
 
 plot_all_sum60_cron
 
 
 library(ggpubr)
- 
-ggarrange(plot_all_sum60_dis,plot_all_sum60_cron)
+ X11()
+fig2<-ggarrange(plot_all_sum60_dis,plot_all_sum60_cron)
+
+pdf(here("Manuscript","Figures","fig2.pdf"), width = 19, height=10)
+fig2
+dev.off()
 
 # geom_area(alpha=0.6 , size=.5, colour="white") +
 
